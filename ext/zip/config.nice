@@ -1,0 +1,8 @@
+#! /bin/sh
+#
+# Created by configure
+
+'./configure' \
+'--with-libzip=/usr/local/Cellar/libzip/1.5.1' \
+'--with-zlib-dir=/usr/local/Cellar/zlib/1.2.11/' \
+"$@"

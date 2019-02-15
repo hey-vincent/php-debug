@@ -1,0 +1,9 @@
+#! /bin/sh
+#
+# Created by configure
+
+'./configure' \
+'--without-iconv' \
+'--without-valgrind' \
+'--enable-fpm' \
+"$@"

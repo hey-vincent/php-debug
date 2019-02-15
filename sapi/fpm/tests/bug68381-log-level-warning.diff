@@ -1,0 +1,9 @@
+001+ ERROR: Expected no log lines but following lines logged:
+002+ [24-Dec-2018 17:12:09] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv, 9): image not found in Unknown on line 0
+003+ 
+004+ [24-Dec-2018 17:12:09] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/openssl' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/openssl, 9): image not found in Unknown on line 0
+005+ 
+006+ [24-Dec-2018 17:12:09] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/zip' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/zip, 9): image not found in Unknown on line 0
+007+ 
+008+ [24-Dec-2018 17:12:09] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/mbstring' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/mbstring, 9): image not found in Unknown on line 0
+009+ 

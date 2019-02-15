@@ -1,0 +1,11 @@
+
+---- EXPECTED OUTPUT
+Done
+---- ACTUAL OUTPUT
+ERROR: The NOTICE does not match expected message:
+- PATTERN: /^\[\d\d-\w\w\w-\d{4} \d\d:\d\d:\d\d\] NOTICE: \[pool aaaa\] 'user' directive is ignored when FPM is not running as root$/
+- MESSAGE: [24-Dec-2018 17:12:09] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv, 9): image not found in Unknown on line 0
+- EXPECT: '\[pool aaaa\] 'user' directive is ignored when FPM is not running as root'
+- ACTUAL: 'PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv' - dlopen(/usr/local/lib/php/extensions/no-debug-non-zts-20151012/iconv, 9): image not found in Unknown on line 0'
+Done
+---- FAILED

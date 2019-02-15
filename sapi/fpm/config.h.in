@@ -1,0 +1,169 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* do we have apparmor support? */
+#undef HAVE_APPARMOR
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
+
+/* Define to 1 if gcc supports __sync_bool_compare_and_swap() a.o. */
+#undef HAVE_BUILTIN_ATOMIC
+
+/* Define to 1 if you have the `clearenv' function. */
+#undef HAVE_CLEARENV
+
+/* do we have clock_gettime? */
+#undef HAVE_CLOCK_GETTIME
+
+/* do we have clock_get_time? */
+#undef HAVE_CLOCK_GET_TIME
+
+/* do we have /dev/poll? */
+#undef HAVE_DEVPOLL
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* do we have epoll? */
+#undef HAVE_EPOLL
+
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* POSIX Access Control List */
+#undef HAVE_FPM_ACL
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* do we have kqueue? */
+#undef HAVE_KQUEUE
+
+/* do we have SO_LISTENQxxx? */
+#undef HAVE_LQ_SO_LISTENQ
+
+/* do we have TCP_INFO? */
+#undef HAVE_LQ_TCP_INFO
+
+/* do we have mach_vm_read? */
+#undef HAVE_MACH_VM_READ
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* do we have poll? */
+#undef HAVE_POLL
+
+/* do we have port framework? */
+#undef HAVE_PORT
+
+/* do we have prctl? */
+#undef HAVE_PRCTL
+
+/* do we have ptrace? */
+#undef HAVE_PTRACE
+
+/* do we have select? */
+#undef HAVE_SELECT
+
+/* Define to 1 if you have the `setenv' function. */
+#undef HAVE_SETENV
+
+/* Define to 1 if you have the `setproctitle' function. */
+#undef HAVE_SETPROCTITLE
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* do we have sysconf? */
+#undef HAVE_SYSCONF
+
+/* Define to 1 if you have the <sysexits.h> header file. */
+#undef HAVE_SYSEXITS_H
+
+/* FPM use systemd integration */
+#undef HAVE_SYSTEMD
+
+/* Define to 1 if you have the <systemd/sd-daemon.h> header file. */
+#undef HAVE_SYSTEMD_SD_DAEMON_H
+
+/* Define to 1 if you have the <sys/acl.h> header file. */
+#undef HAVE_SYS_ACL_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <sys/uio.h> header file. */
+#undef HAVE_SYS_UIO_H
+
+/* do we have times? */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* fpm group name */
+#undef PHP_FPM_GROUP
+
+/* fpm systemd service type */
+#undef PHP_FPM_SYSTEMD
+
+/* fpm user name */
+#undef PHP_FPM_USER
+
+/* /proc/pid/mem interface */
+#undef PROC_MEM_FILE
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
