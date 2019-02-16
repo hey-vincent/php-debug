@@ -217,7 +217,10 @@ static int fpm_sockets_new_listening_socket(struct fpm_worker_pool_s *wp, struct
 		close(sock);
 		return -1;
 	}
-
+    // wensheng comment:--
+    struct	in_addr *pia = (struct in_addr *)fpm_get_in_addr(sa);
+    theVlog("Socket成功绑定到[%s:%d]", inet_ntoa(*pia ), fpm_get_in_port(sa));
+    // --:end
 	if (wp->listen_address_domain == FPM_AF_UNIX) {
 		char *path = ((struct sockaddr_un *) sa)->sun_path;
 
@@ -234,8 +237,11 @@ static int fpm_sockets_new_listening_socket(struct fpm_worker_pool_s *wp, struct
 		close(sock);
 		return -1;
 	}
+    // wensheng comment:--
+    theVlog("开始监听[%s:%d]", inet_ntoa(*pia ), fpm_get_in_port(sa));
+    // --:end
 
-	return sock;
+    return sock;
 }
 /* }}} */
 
@@ -270,7 +276,6 @@ enum fpm_address_domain fpm_sockets_domain_from_address(char *address) /* {{{ */
 
 static int fpm_socket_af_inet_socket_by_addr(struct fpm_worker_pool_s *wp, const char *addr, const char *port) /* {{{ */
 {
-	theVlog("Socket!!!");
 	struct addrinfo hints, *servinfo, *p;
 	char tmpbuf[INET6_ADDRSTRLEN];
 	int status;

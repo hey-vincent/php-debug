@@ -107,6 +107,10 @@ int fpm_run(int *max_requests) /* {{{ */
 	/* create initial children in all pools */
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
 		int is_parent;
+        // wensheng comment:--
+        theVlog("当前pool: %s", wp->config->name);
+        // 父进程返回 > 0, 子进程 和 失败 返回 0 -1
+        // --:end
 		is_parent = fpm_children_create_initial(wp);
 		if (!is_parent) {
 			goto run_child;

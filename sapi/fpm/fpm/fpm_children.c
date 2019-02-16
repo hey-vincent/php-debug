@@ -92,8 +92,11 @@ static void fpm_child_link(struct fpm_child_s *child) /* {{{ */
 
 	++wp->running_children;
 	++fpm_globals.running_children;
+    // wensheng comment:--
+    theVlog("正在运行的child进程个数 (%d)", fpm_globals.running_children);
+    // --:end
 
-	child->next = wp->children;
+    child->next = wp->children;
 	if (child->next) {
 		child->next->prev = child;
 	}
@@ -386,6 +389,10 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 	} else { /* PM_STYLE_STATIC */
 		max = wp->config->pm_max_children;
 	}
+
+    // wensheng comment:--
+    theVlog("process max: %d", fpm_global_config.process_max);
+    // --:end
 
 	/*
 	 * fork children while:

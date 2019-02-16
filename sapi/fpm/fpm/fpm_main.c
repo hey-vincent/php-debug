@@ -1420,7 +1420,7 @@ static void init_request_info(void)
 /* }}} */
 
 static fcgi_request *fpm_init_request(int listen_fd) /* {{{ */ {
-	fcgi_request *req = fcgi_init_request(listen_fd,
+    fcgi_request *req = fcgi_init_request(listen_fd,
 		fpm_request_accepting,
 		fpm_request_reading_headers,
 		fpm_request_finished);
@@ -1885,8 +1885,7 @@ consult the installation file that came with this distribution, or visit \n\
 		close(fpm_globals.send_config_pipe[1]);
 	}
 	fpm_is_running = 1;
-	// vincent comment notes: 2018-12-25
-	zlog(ZLOG_NOTICE,"start run fpm...");
+	// wensheng comment notes: 2018-12-25 创建子进程
 	fcgi_fd = fpm_run(&max_requests);
 	parent = 0;
 
@@ -1897,7 +1896,10 @@ consult the installation file that came with this distribution, or visit \n\
 	php_php_import_environment_variables = php_import_environment_variables;
 	php_import_environment_variables = cgi_php_import_environment_variables;
 
-	/* library is already initialized, now init our request */
+    // wensheng comment:--
+    theVlog("开始请求初始化");
+    // --:end
+    /* library is already initialized, now init our request */
 	request = fpm_init_request(fcgi_fd);
 
 	zend_first_try {

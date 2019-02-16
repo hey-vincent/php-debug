@@ -39,9 +39,12 @@ enum {
 // vincent comment notes: 2018-12-25 add debuglog func
 #define SHOW_VINCENT_LOG
   #ifdef SHOW_VINCENT_LOG
-  #define Vprefix           " \x1B[31m∆∆∆∆∆∆\x1B[0m\t"
-  #define Vtag(txt)           Vprefix""txt
+  #define Vprefix           "\x1B[31m∆∆∆∆∆∆\x1B[0m\t"
+  #define Vtag(txt)         "\x1B[31m" ""txt "\x1B[0m\t"
   #define theVlog(txt,...)  zlog_ex(__func__, __LINE__, ZLOG_VINCENT, Vtag(txt),##__VA_ARGS__)
+  #endif
+#ifndef SHOW_VINCENT_LOG
+#define theVlog(txt,...) zlog_ex(__func__, __LINE__, flags, __VA_ARGS__)
 #endif
 
 #define ZLOG_LEVEL_MASK 7
