@@ -1,3 +1,0 @@
-/Users/momo/helloworld/php-source-code-reading/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/momo/helloworld/php-source-code-reading/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/momo/helloworld/php-source-code-reading/cmake-build-debug/CMakeFiles/php_source_code_reading.dir
