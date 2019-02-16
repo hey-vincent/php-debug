@@ -1,7 +1,6 @@
 Based on PHP 7.2.15
 
->
-The PHP Interpreter
+>The PHP Interpreter
 ===================
 
 This is the github mirror of the official PHP repository located at
