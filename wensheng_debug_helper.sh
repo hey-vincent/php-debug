@@ -9,16 +9,16 @@ fi
 
 function remake(){
 	killall php-fpm
-	cd /Users/momo/helloworld/php-source-code-reading/sapi/fpm
+	cd /Users/momo/helloworld/github/php-debug/sapi/fpm
 	make clean
-	cd /Users/momo/helloworld/php-source-code-reading
+	cd /Users/momo/helloworld/github/php-debug
 	make -j 8
 	clear
 	start
 }
 
 function start(){
-	/Users/momo/helloworld/php-source-code-reading/sapi/fpm/php-fpm
+	/Users/momo/helloworld/github/php-debug/sapi/fpm/php-fpm
 }
 
 
