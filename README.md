@@ -1,3 +1,6 @@
+Based on PHP 7.2.15
+
+>>>
 The PHP Interpreter
 ===================
 
@@ -37,3 +40,4 @@ Guidelines for contributors
 - [README.GIT-RULES](/README.GIT-RULES)
 - [README.MAILINGLIST_RULES](/README.MAILINGLIST_RULES)
 - [README.RELEASE_PROCESS](/README.RELEASE_PROCESS)
+

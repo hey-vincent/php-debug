@@ -3,3 +3,7 @@ cmake*
 Makefile*
 *.lo
 *.o
+config.log
+config.status
+ext/phar/phar.phar
+main/php_config.h
