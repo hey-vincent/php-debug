@@ -1,6 +1,6 @@
 Based on PHP 7.2.15
 
->>>
+>
 The PHP Interpreter
 ===================
 
