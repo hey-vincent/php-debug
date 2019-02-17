@@ -1067,7 +1067,9 @@ static int fcgi_read_request(fcgi_request *req)
 	    hdr.version < FCGI_VERSION_1) {
 		return 0;
 	}
-
+    // wensheng comment:--
+    fcgi_log(FCGI_WARNING,"读到fcgi header [type:%d, version:%d]", hdr.type, hdr.version);
+    // --:end
 	len = (hdr.contentLengthB1 << 8) | hdr.contentLengthB0;
 	padding = hdr.paddingLength;
 
@@ -1408,8 +1410,14 @@ int fcgi_accept_request(fcgi_request *req)
 					req->hook.on_accept();
 
 					FCGI_LOCK(req->listen_socket);
+					// wensheng comment:--
+					fcgi_log(FCGI_WARNING, "开始accept socket_fd:%d", req->listen_socket);
+					// --:end
 					req->fd = accept(listen_socket, (struct sockaddr *)&sa, &len);
 					FCGI_UNLOCK(req->listen_socket);
+					// wensheng comment:--
+					fcgi_log(FCGI_WARNING, "socket_fd:%d 读到请求", req->listen_socket );
+					// --:end
 
 					client_sa = sa;
 					if (req->fd >= 0 && !fcgi_is_allowed()) {
@@ -1475,7 +1483,7 @@ int fcgi_accept_request(fcgi_request *req)
 			return -1;
 		}
 		req->hook.on_read();
-		if (fcgi_read_request(req)) {
+        if (fcgi_read_request(req)) {
 #ifdef _WIN32
 			if (is_impersonate && !req->tcp) {
 				pipe = (HANDLE)_get_osfhandle(req->fd);

@@ -1896,9 +1896,6 @@ consult the installation file that came with this distribution, or visit \n\
 	php_php_import_environment_variables = php_import_environment_variables;
 	php_import_environment_variables = cgi_php_import_environment_variables;
 
-    // wensheng comment:--
-    theVlog("开始请求初始化");
-    // --:end
     /* library is already initialized, now init our request */
 	request = fpm_init_request(fcgi_fd);
 

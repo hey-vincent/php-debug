@@ -238,7 +238,7 @@ static int fpm_sockets_new_listening_socket(struct fpm_worker_pool_s *wp, struct
 		return -1;
 	}
     // wensheng comment:--
-    theVlog("开始监听[%s:%d]", inet_ntoa(*pia ), fpm_get_in_port(sa));
+    theVlog("开始监听[%s:%d] socket_fd:%d", inet_ntoa(*pia ), fpm_get_in_port(sa), sock);
     // --:end
 
     return sock;

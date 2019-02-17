@@ -145,7 +145,9 @@ void fpm_request_info() /* {{{ */
 	if (script_filename) {
 		strlcpy(proc->script_filename, script_filename, sizeof(proc->script_filename));
 	}
-
+	// wensheng comment:--
+	theVlog("请求信息：[method:%s uri:%s]", proc->request_method, proc->request_uri);
+	// --:end
 	fpm_scoreboard_proc_release(proc);
 }
 /* }}} */
