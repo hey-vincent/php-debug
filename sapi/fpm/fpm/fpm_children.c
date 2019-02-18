@@ -348,7 +348,9 @@ static void fpm_child_resources_use(struct fpm_child_s *child) /* {{{ */
 		}
 		fpm_scoreboard_free(wp->scoreboard);
 	}
-
+	// wensheng comment:--
+	theVlog("scoreboard_i = %d", child->scoreboard_i);
+	// --:end
 	fpm_scoreboard_child_use(child->wp->scoreboard, child->scoreboard_i, getpid());
 	fpm_stdio_child_use_pipes(child);
 	fpm_child_free(child);
@@ -415,6 +417,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 		switch (pid) {
 
 			case 0 :
+			    theVlog("我是刚刚被创建的子进程");
 				fpm_child_resources_use(child);
 				fpm_globals.is_child = 1;
 				fpm_child_init(wp);

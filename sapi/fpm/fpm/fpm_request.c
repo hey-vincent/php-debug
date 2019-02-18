@@ -119,6 +119,10 @@ void fpm_request_info() /* {{{ */
 		return;
 	}
 
+	// wensheng comment:--
+	theVlog("处理请求的进程为: %d", proc->pid);
+	// --:end
+
 	proc->request_stage = FPM_REQUEST_INFO;
 	proc->tv = now;
 

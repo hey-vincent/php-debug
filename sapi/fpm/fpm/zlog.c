@@ -20,7 +20,7 @@
 #define MAX_LINE_LENGTH 1024
 
 static int zlog_fd = -1;
-static int zlog_level = ZLOG_DEBUG; // vincent comment notes: 2018-12-26 修改loglevel
+static int zlog_level = ZLOG_NOTICE;
 static int launched = 0;
 static void (*external_logger)(int, char *, size_t) = NULL;
 
@@ -30,7 +30,6 @@ static const char *level_names[] = {
 	[ZLOG_WARNING] = "WARNING",
 	[ZLOG_ERROR]   = "ERROR",
 	[ZLOG_ALERT]   = "ALERT",
-	[ZLOG_VINCENT] = "VINCENT", // vincent comment notes: 2018-12-25
 };
 
 #ifdef HAVE_SYSLOG_H
@@ -40,7 +39,6 @@ const int syslog_priorities[] = {
 	[ZLOG_WARNING] = LOG_WARNING,
 	[ZLOG_ERROR]   = LOG_ERR,
 	[ZLOG_ALERT]   = LOG_ALERT,
-	[ZLOG_VINCENT] = LOG_NOTICE, // vincent comment notes: 2018-12-25
 };
 #endif
 
@@ -82,7 +80,6 @@ size_t zlog_print_time(struct timeval *tv, char *timebuf, size_t timebuf_len) /*
 
 int zlog_set_fd(int new_fd) /* {{{ */
 {
-	theVlog("Set log FD %d", new_fd);
 	int old_fd = zlog_fd;
 
 	zlog_fd = new_fd;
@@ -92,7 +89,6 @@ int zlog_set_fd(int new_fd) /* {{{ */
 
 int zlog_set_level(int new_value) /* {{{ */
 {
-	theVlog("设置日志级别：(%d)", new_value);
 	int old_value = zlog_level;
 
 	if (new_value < ZLOG_DEBUG || new_value > ZLOG_ALERT) return old_value;
@@ -110,15 +106,6 @@ void vzlog(const char *function, int line, int flags, const char *fmt, va_list a
 	size_t len = 0;
 	int truncated = 0;
 	int saved_errno;
-
-	// vincent comment notes: 2019-02-14
-	char new_func[41];
-	memset(new_func, 0, 41);
-	memset(new_func, ' ', 40);
-	if(strlen(function) > 0 && strlen(function) < 40){
-	    memcpy(new_func + 40 - strlen(function), function, strlen(function) );
-	    function = new_func;
-	}
 
 	if (external_logger) {
 		va_list ap;
@@ -142,23 +129,21 @@ void vzlog(const char *function, int line, int flags, const char *fmt, va_list a
 #ifdef HAVE_SYSLOG_H
 	if (zlog_fd == ZLOG_SYSLOG /* && !fpm_globals.is_child */) {
 		len = 0;
-		if (zlog_level == ZLOG_DEBUG || zlog_level == ZLOG_VINCENT ) { // vincent comment notes: 2018-12-25
-
-			len += snprintf(buf, buf_size, "[%s] %s() \t\t\t line=%d: \t", level_names[flags & ZLOG_LEVEL_MASK], function, line);
+		if (zlog_level == ZLOG_DEBUG) {
+			len += snprintf(buf, buf_size, "[%s] %s(), line %d: ", level_names[flags & ZLOG_LEVEL_MASK], function, line);
 		} else {
 			len += snprintf(buf, buf_size, "[%s] ", level_names[flags & ZLOG_LEVEL_MASK]);
 		}
 	} else
 #endif
 	{
-
 		if (!fpm_globals.is_child) {
 			gettimeofday(&tv, 0);
 			len = zlog_print_time(&tv, buf, buf_size);
 		}
-		if (zlog_level == ZLOG_DEBUG || flags == ZLOG_VINCENT ) {
+		if (zlog_level == ZLOG_DEBUG) {
 			if (!fpm_globals.is_child) {
-				len += snprintf(buf + len, buf_size - len, "%s\tpid %d\t%s()\tline %d:\t ", level_names[flags & ZLOG_LEVEL_MASK], getpid(), function, line);
+				len += snprintf(buf + len, buf_size - len, "%s: pid %d, %s(), line %d: ", level_names[flags & ZLOG_LEVEL_MASK], getpid(), function, line);
 			} else {
 				len += snprintf(buf + len, buf_size - len, "%s: %s(), line %d: ", level_names[flags & ZLOG_LEVEL_MASK], function, line);
 			}

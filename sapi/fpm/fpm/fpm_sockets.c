@@ -435,7 +435,7 @@ int fpm_sockets_init_main() /* {{{ */
 	}
 
 	/* create all required sockets */
-	// vincent comment notes: 2018-12-26 创建socket
+	// wensheng comment notes: 2018-12-26 创建socket
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
 		switch (wp->listen_address_domain) {
 			case FPM_AF_INET :

@@ -327,6 +327,10 @@ static char *fpm_conf_set_log_level(zval *value, void **config, intptr_t offset)
 	char *val = Z_STRVAL_P(value);
 	int log_level;
 
+	// wensheng comment:--
+	theVlog("设置日志级别：%s", val);
+	// --:end
+
 	if (!strcasecmp(val, "debug")) {
 		log_level = ZLOG_DEBUG;
 	} else if (!strcasecmp(val, "notice")) {

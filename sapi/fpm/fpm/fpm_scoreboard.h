@@ -61,7 +61,7 @@ struct fpm_scoreboard_s {
 	int lq;
 	int lq_max;
 	unsigned int lq_len;
-	unsigned int nprocs;
+	unsigned int nprocs; // wensheng comment: 最大进程数
 	int free_proc;
 	unsigned long int slow_rq;
 	struct fpm_scoreboard_proc_s *procs[];

@@ -1416,7 +1416,7 @@ int fcgi_accept_request(fcgi_request *req)
 					req->fd = accept(listen_socket, (struct sockaddr *)&sa, &len);
 					FCGI_UNLOCK(req->listen_socket);
 					// wensheng comment:--
-					fcgi_log(FCGI_WARNING, "socket_fd:%d 读到请求", req->listen_socket );
+					fcgi_log(FCGI_WARNING, "进程：%d, socket_fd:%d 读到请求", getpid(), req->listen_socket );
 					// --:end
 
 					client_sa = sa;
@@ -1449,7 +1449,12 @@ int fcgi_accept_request(fcgi_request *req)
 					fds.revents = 0;
 					do {
 						errno = 0;
-						ret = poll(&fds, 1, 5000);
+                        // wensheng comment:--
+                        // TODO 为什么要用pool? 而且我这里已经accept到了  直接读不行吗
+                        // TODO: 为什么只poll这一个进程的FD？
+                        // --:end
+                        ret = poll(&fds, 1, 5000);
+						fcgi_log(FCGI_WARNING, "do pool() = %d ", ret);
 					} while (ret < 0 && errno == EINTR);
 					if (ret > 0 && (fds.revents & POLLIN)) {
 						break;

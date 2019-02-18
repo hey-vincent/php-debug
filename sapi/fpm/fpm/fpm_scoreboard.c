@@ -62,10 +62,13 @@ int fpm_scoreboard_init_main() /* {{{ */
 		if (!shm_mem) {
 			return -1;
 		}
+
 		wp->scoreboard         = shm_mem;
 		wp->scoreboard->nprocs = wp->config->pm_max_children;
 		shm_mem               += scoreboard_size;
-
+		// wensheng comment:--
+		theVlog("设置scoreboard.nprocs = %d", wp->config->pm_max_children );
+		// --:end
 		for (i = 0; i < wp->scoreboard->nprocs; i++, shm_mem += sizeof(struct fpm_scoreboard_proc_s)) {
 			wp->scoreboard->procs[i] = shm_mem;
 		}
@@ -257,6 +260,7 @@ void fpm_scoreboard_child_use(struct fpm_scoreboard_s *scoreboard, int child_ind
 	struct fpm_scoreboard_proc_s *proc;
 	fpm_scoreboard = scoreboard;
 	fpm_scoreboard_i = child_index;
+	theVlog("设置 fpm_scoreboard_i = %d", child_index );
 	proc = fpm_scoreboard_proc_get(scoreboard, child_index);
 	if (!proc) {
 		return;
@@ -293,10 +297,14 @@ int fpm_scoreboard_proc_alloc(struct fpm_scoreboard_s *scoreboard, int *child_in
 		return -1;
 	}
 
+	// wensheng comment:--
+	theVlog("scoreboar: 当前空闲进程数 = %d, 最大进程数 = %d", scoreboard->free_proc, scoreboard->nprocs);
+	// --:end
 	/* first try the slot which is supposed to be free */
 	if (scoreboard->free_proc >= 0 && (unsigned int)scoreboard->free_proc < scoreboard->nprocs) {
 		if (scoreboard->procs[scoreboard->free_proc] && !scoreboard->procs[scoreboard->free_proc]->used) {
 			i = scoreboard->free_proc;
+			theVlog("最后一次创建的子进程未使用：index = %d", i);
 		}
 	}
 
@@ -304,7 +312,11 @@ int fpm_scoreboard_proc_alloc(struct fpm_scoreboard_s *scoreboard, int *child_in
 		zlog(ZLOG_DEBUG, "[pool %s] the proc->free_slot was not free. Let's search", scoreboard->pool);
 		for (i = 0; i < (int)scoreboard->nprocs; i++) {
 			if (scoreboard->procs[i] && !scoreboard->procs[i]->used) { /* found */
+				theVlog("发现空闲进程：index = %d", i);
 				break;
+			}
+			if (scoreboard->procs[i] && scoreboard->procs[i]->used){
+				theVlog("进程%d繁忙", scoreboard->procs[i]->pid);
 			}
 		}
 	}

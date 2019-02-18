@@ -78,6 +78,7 @@
 #include "php_main.h"
 #include "fopen_wrappers.h"
 #include "ext/standard/php_standard.h"
+#include "fpm_scoreboard.h"
 
 #ifdef PHP_WIN32
 # include <io.h>
@@ -1420,7 +1421,7 @@ static void init_request_info(void)
 /* }}} */
 
 static fcgi_request *fpm_init_request(int listen_fd) /* {{{ */ {
-    fcgi_request *req = fcgi_init_request(listen_fd,
+	fcgi_request *req = fcgi_init_request(listen_fd,
 		fpm_request_accepting,
 		fpm_request_reading_headers,
 		fpm_request_finished);
@@ -1865,8 +1866,6 @@ consult the installation file that came with this distribution, or visit \n\
 		}
 	}
 
-	theVlog("开始初始化fpm, 传入config信息 fpm_config(%d) %s", fpm_config, fpm_config ? fpm_config : CGIG(fpm_config));
-	// vincent comment notes: 2019-01-03 宏展开
 	if (0 > fpm_init(argc, argv, fpm_config ? fpm_config : CGIG(fpm_config), fpm_prefix, fpm_pid, test_conf, php_allow_to_run_as_root, force_daemon, force_stderr)) {
 
 		if (fpm_globals.send_config_pipe[1]) {
@@ -1889,6 +1888,18 @@ consult the installation file that came with this distribution, or visit \n\
 	fcgi_fd = fpm_run(&max_requests);
 	parent = 0;
 
+//	theVlog("what?? %s", fpm_worker_all_pools->config->name);
+//	// wensheng comment:--
+//	for (struct fpm_worker_pool_s *pw= fpm_worker_all_pools;  pw ; pw = pw->next) {
+//		theVlog("pools name: %s", pw->config->name);
+//		if (pw->config && pw->config->name && 0 == strcmp(pw->config->name, "www")){
+//			for(struct fpm_scoreboard_proc_s **px = pw->scoreboard->procs; px; px++){
+//				theVlog("polls elements:%d", (*px)->pid);
+//			}
+//		}
+//	}
+	// --:end
+
 	/* onced forked tell zlog to also send messages through sapi_cgi_log_fastcgi() */
 	zlog_set_external_logger(sapi_cgi_log_fastcgi);
 
@@ -1896,7 +1907,7 @@ consult the installation file that came with this distribution, or visit \n\
 	php_php_import_environment_variables = php_import_environment_variables;
 	php_import_environment_variables = cgi_php_import_environment_variables;
 
-    /* library is already initialized, now init our request */
+	/* library is already initialized, now init our request */
 	request = fpm_init_request(fcgi_fd);
 
 	zend_first_try {
