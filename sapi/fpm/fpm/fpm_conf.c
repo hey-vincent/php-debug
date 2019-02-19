@@ -328,7 +328,7 @@ static char *fpm_conf_set_log_level(zval *value, void **config, intptr_t offset)
 	int log_level;
 
 	// wensheng comment:--
-	theVlog("设置日志级别：%s", val);
+	wenshengLog("设置日志级别：%s", val);
 	// --:end
 
 	if (!strcasecmp(val, "debug")) {
@@ -599,7 +599,7 @@ static char *fpm_conf_set_array(zval *key, zval *value, void **config, int conve
 
 static void *fpm_worker_pool_config_alloc() /* {{{ */
 {
-	theVlog("初始化worker pool");
+	wenshengLog("初始化worker pool");
 	struct fpm_worker_pool_s *wp;
 
 	wp = fpm_worker_pool_alloc();
@@ -624,7 +624,7 @@ static void *fpm_worker_pool_config_alloc() /* {{{ */
 
 	if (!fpm_worker_all_pools) {
 		fpm_worker_all_pools = wp;
-        theVlog("fpm_worker_all_pools 第一次初始化，[conf.listen:%s]", fpm_worker_all_pools->config);
+        wenshengLog("fpm_worker_all_pools 第一次初始化，[conf.listen:%s]", fpm_worker_all_pools->config);
 	} else {
 		struct fpm_worker_pool_s *tmp = fpm_worker_all_pools;
 		while (tmp) {
@@ -764,7 +764,7 @@ static int fpm_conf_process_all_pools() /* {{{ */
 	for(struct fpm_worker_pool_s * fwp0 = fpm_worker_all_pools; fwp0; fwp0 = fwp0->next){
         ++pool_workers_count;
 	}
-	theVlog("pool_workers_count(%d)", pool_workers_count);
+	wenshengLog("pool_workers_count(%d)", pool_workers_count);
 	// wesheng comment end
 
 
@@ -1266,7 +1266,7 @@ static int fpm_conf_post_process(int force_daemon) /* {{{ */
 			continue;
 		}
 		// vincent comment notes: 2019-02-14
-		theVlog("worker initial: %d", 1);
+		wenshengLog("worker initial: %d", 1);
 		if (0 > fpm_log_write(wp->config->access_format)) {
 			zlog(ZLOG_ERROR, "[pool %s] wrong format for access.format '%s'", wp->config->name, wp->config->access_format);
 			return -1;
@@ -1500,7 +1500,7 @@ static void fpm_conf_ini_parser_array(zval *name, zval *key, zval *value, void *
 
 static void fpm_conf_ini_parser(zval *arg1, zval *arg2, zval *arg3, int callback_type, void *arg) /* {{{ */
 {
-    theVlog("配置项：%s = %s \t类型：%d ", ((unsigned char*) Z_STRVAL_P(arg1)), NULL != arg2 ? ((unsigned char*) Z_STRVAL_P(arg2)) : "",  callback_type);
+    wenshengLog("配置项：%s = %s \t类型：%d ", ((unsigned char*) Z_STRVAL_P(arg1)), NULL != arg2 ? ((unsigned char*) Z_STRVAL_P(arg2)) : "",  callback_type);
 	int *error;
 
 	if (!arg1 || !arg) return;
@@ -1528,7 +1528,7 @@ static void fpm_conf_ini_parser(zval *arg1, zval *arg2, zval *arg3, int callback
 int fpm_conf_load_ini_file(char *filename) /* {{{ */
 {
 	// vincent comment notes:  add log
-	theVlog("初始化配置文件: (%s)", filename);
+	wenshengLog("初始化配置文件: (%s)", filename);
 	int error = 0;
 
 	// vincent comment notes: 2019-02-15
@@ -1589,7 +1589,7 @@ int fpm_conf_load_ini_file(char *filename) /* {{{ */
 		// vincent comment notes: 2019-02-15
 		// dbuf = (char*) realloc(dbuf, strlen(buf) + 1);
 		// memcpy(dbuf, buf, strlen(buf) -1 );
-		// theVlog("读到配置内容：%s", dbuf);
+		// wenshengLog("读到配置内容：%s", dbuf);
 		// memset(dbuf,0, strlen(buf) + 1);
 		tmp = zend_parse_ini_string(buf, 1, ZEND_INI_SCANNER_NORMAL, (zend_ini_parser_cb_t)fpm_conf_ini_parser, &error);
 
@@ -1621,7 +1621,7 @@ int fpm_conf_load_ini_file(char *filename) /* {{{ */
 	ini_recursion--;
 	close(fd);
 
-    theVlog("php-fpm.conf正常解析： 现在fpm_worker_all_pools（listen:%s）", fpm_worker_all_pools ? fpm_worker_all_pools->config->listen_address : "空的") ;
+    wenshengLog("php-fpm.conf正常解析： 现在fpm_worker_all_pools（listen:%s）", fpm_worker_all_pools ? fpm_worker_all_pools->config->listen_address : "空的") ;
 	return ret;
 }
 /* }}} */
@@ -1724,7 +1724,7 @@ static void fpm_conf_dump() /* {{{ */
 
 int fpm_conf_init_main(int test_conf, int force_daemon) /* {{{ */
 {
-	theVlog("fpm_conf_init_main(%d,%d)", test_conf, force_daemon);
+	wenshengLog("fpm_conf_init_main(%d,%d)", test_conf, force_daemon);
 	int ret;
 
 	// vincent comment notes: 2019-01-03  prefix shoud be NULL commonly.
@@ -1746,10 +1746,10 @@ int fpm_conf_init_main(int test_conf, int force_daemon) /* {{{ */
 		if (fpm_globals.prefix == NULL) {
 			// vincent comment notes: 2019-01-03 默认的配置文件存放位置
 			spprintf(&tmp, 0, "%s/php-fpm.conf", PHP_SYSCONFDIR);
-			theVlog("使用默认配置文件: %s", tmp );
+			wenshengLog("使用默认配置文件: %s", tmp );
 		} else {
 			spprintf(&tmp, 0, "%s/etc/php-fpm.conf", fpm_globals.prefix);
-			theVlog("使用指定配置文件: %s", tmp );
+			wenshengLog("使用指定配置文件: %s", tmp );
 		}
 
 		if (!tmp) {

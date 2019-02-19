@@ -60,4 +60,21 @@ struct fpm_globals_s {
 
 extern struct fpm_globals_s fpm_globals;
 
+// wensheng custom:---
+#include "fpm_events.h"
+#include <string.h>
+void traceLog(char *fl);
+inline const char* fm_event_tag(int tag){
+    if (tag == FPM_EV_TIMEOUT) return "FPM_EV_EDGE";
+    if (tag == FPM_EV_READ   ) return "FPM_EV_READ";
+    if (tag == FPM_EV_PERSIST) return "FPM_EV_PERSIST";
+    if (tag == FPM_EV_EDGE   ) return "FPM_EV_EDGE";
+    char* buf = (char*)malloc(4);
+    sprintf(buf, "%d", tag);
+    // TODO just debug; miss free
+    return (const char *)(buf);
+};
+
+//---:end
+
 #endif

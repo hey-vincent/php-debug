@@ -57,6 +57,7 @@ static int next_free_slot = 0;
 struct fpm_event_module_s *fpm_event_poll_module() /* {{{ */
 {
 #if HAVE_POLL
+	wenshengLog("执行module赋值 poll");
 	return &poll_module;
 #else
 	return NULL;
@@ -132,6 +133,7 @@ static int fpm_event_poll_clean() /* {{{ */
  */
 static int fpm_event_poll_wait(struct fpm_event_queue_s *queue, unsigned long int timeout) /* {{{ */
 {
+	wenshengLog("Event等待, npollfds = %d", npollfds);
 	int ret;
 	struct fpm_event_queue_s *q;
 
@@ -143,7 +145,7 @@ static int fpm_event_poll_wait(struct fpm_event_queue_s *queue, unsigned long in
 	/* wait for inconming event or timeout */
 	ret = poll(active_pollfds, npollfds, timeout);
 	if (ret == -1) {
-
+        wenshengLog("POLL 失败");
 		/* trigger error unless signal interrupt */
 		if (errno != EINTR) {
 			zlog(ZLOG_WARNING, "poll() returns %d", errno);
@@ -153,7 +155,7 @@ static int fpm_event_poll_wait(struct fpm_event_queue_s *queue, unsigned long in
 
 	/* events have been triggered */
 	if (ret > 0) {
-
+        wenshengLog("Poll到事件");
 		/* trigger POLLIN events */
 		q = queue;
 		while (q) {
@@ -163,6 +165,7 @@ static int fpm_event_poll_wait(struct fpm_event_queue_s *queue, unsigned long in
 				/* has the event has been triggered ? */
 				if (active_pollfds[q->ev->index].revents & POLLIN) {
 
+					wenshengLog("POLLIN事件 Wait->poll->Fire!!!");
 					/* fire the event */
 					fpm_event_fire(q->ev);
 
@@ -174,6 +177,10 @@ static int fpm_event_poll_wait(struct fpm_event_queue_s *queue, unsigned long in
 			}
 			q = q->next; /* iterate */
 		}
+	}
+	// wensheng comment
+	else{
+	    wenshengLog("超时无事件");
 	}
 
 	return ret;

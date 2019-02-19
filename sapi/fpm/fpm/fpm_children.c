@@ -88,13 +88,21 @@ static void fpm_child_close(struct fpm_child_s *child, int in_event_loop) /* {{{
 
 static void fpm_child_link(struct fpm_child_s *child) /* {{{ */
 {
-	struct fpm_worker_pool_s *wp = child->wp;
+    struct fpm_worker_pool_s *wp = child->wp;
+
+    // wensheng comment:--
+    char xbuf[1024] = {0};
+    xbuf[0] = '{';
+    int offset = 1;
+    for (struct fpm_child_s* pChild = wp->children; pChild && offset < 1024 ; pChild = pChild->next) {
+        offset += snprintf(xbuf+offset, 1024 - offset, "%d, ", pChild->pid);
+    }
+    if (offset < 1023) xbuf[offset] ='}';
+    wenshengLog("所有子进程：%s", xbuf);
+    // --:end
 
 	++wp->running_children;
 	++fpm_globals.running_children;
-    // wensheng comment:--
-    theVlog("正在运行的child进程个数 (%d)", fpm_globals.running_children);
-    // --:end
 
     child->next = wp->children;
 	if (child->next) {
@@ -320,7 +328,7 @@ static struct fpm_child_s *fpm_resources_prepare(struct fpm_worker_pool_s *wp) /
 		fpm_child_free(c);
 		return 0;
 	}
-
+    wenshengLog("管道%d==%d",c->fd_stdout, c->fd_stderr);
 	if (0 > fpm_scoreboard_proc_alloc(wp->scoreboard, &c->scoreboard_i)) {
 		fpm_stdio_discard_pipes(c);
 		fpm_child_free(c);
@@ -349,7 +357,7 @@ static void fpm_child_resources_use(struct fpm_child_s *child) /* {{{ */
 		fpm_scoreboard_free(wp->scoreboard);
 	}
 	// wensheng comment:--
-	theVlog("scoreboard_i = %d", child->scoreboard_i);
+	wenshengLog("scoreboard_i = %d", child->scoreboard_i);
 	// --:end
 	fpm_scoreboard_child_use(child->wp->scoreboard, child->scoreboard_i, getpid());
 	fpm_stdio_child_use_pipes(child);
@@ -366,11 +374,6 @@ static void fpm_parent_resources_use(struct fpm_child_s *child) /* {{{ */
 
 int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to_spawn, int is_debug) /* {{{ */
 {
-	// wensheng comment
-	theVlog("开始创建worker进程!");
-	//wensheng comment end
-
-
 	pid_t pid;
 	struct fpm_child_s *child;
 	int max;
@@ -393,7 +396,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 	}
 
     // wensheng comment:--
-    theVlog("process max: %d", fpm_global_config.process_max);
+    wenshengLog("process max: %d", fpm_global_config.process_max);
     // --:end
 
 	/*
@@ -407,6 +410,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 
 		warned = 0;
 		child = fpm_resources_prepare(wp);
+		wenshengLog("子进程Event:%d,%d", child->ev_stderr, child->ev_stdout);
 
 		if (!child) {
 			return 2;
@@ -417,10 +421,10 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 		switch (pid) {
 
 			case 0 :
-			    theVlog("我是刚刚被创建的子进程");
 				fpm_child_resources_use(child);
 				fpm_globals.is_child = 1;
 				fpm_child_init(wp);
+				wenshengLog("Child进程：%d创建成功",getpid());
 				return 0;
 
 			case -1 :
@@ -433,9 +437,15 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 				child->pid = pid;
 				fpm_clock_get(&child->started);
 				fpm_parent_resources_use(child);
-
 				zlog(is_debug ? ZLOG_DEBUG : ZLOG_NOTICE, "[pool %s] child %d started", wp->config->name, (int) pid);
-		}
+                wenshengLog("================================================================");
+                wenshengLog("=                                                              =");
+                wenshengLog("=                   子进程%d创建完                             =",pid);
+                wenshengLog("=                                                              =");
+                wenshengLog("=                                                              =");
+                wenshengLog("================================================================");
+
+        }
 
 	}
 
@@ -452,7 +462,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 
 int fpm_children_create_initial(struct fpm_worker_pool_s *wp) /* {{{ */
 {
-    theVlog("准备初始化worker进程");
+    wenshengLog("准备初始化Child进程");
 	if (wp->config->pm == PM_STYLE_ONDEMAND) {
 		wp->ondemand_event = (struct fpm_event_s *)malloc(sizeof(struct fpm_event_s));
 

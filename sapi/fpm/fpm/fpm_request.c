@@ -59,6 +59,7 @@ void fpm_request_accepting() /* {{{ */
 
 void fpm_request_reading_headers() /* {{{ */
 {
+    wenshengLog("OnAccept回调");
 	struct fpm_scoreboard_proc_s *proc;
 
 	struct timeval now;
@@ -95,7 +96,7 @@ void fpm_request_reading_headers() /* {{{ */
 	proc->content_length = 0;
 	fpm_scoreboard_proc_release(proc);
 
-	/* idle--, active++, request++ */
+        /* idle--, active++, request++ */
 	fpm_scoreboard_update(-1, 1, 0, 0, 1, 0, 0, FPM_SCOREBOARD_ACTION_INC, NULL);
 }
 /* }}} */
@@ -118,10 +119,6 @@ void fpm_request_info() /* {{{ */
 		zlog(ZLOG_WARNING, "failed to acquire proc scoreboard");
 		return;
 	}
-
-	// wensheng comment:--
-	theVlog("处理请求的进程为: %d", proc->pid);
-	// --:end
 
 	proc->request_stage = FPM_REQUEST_INFO;
 	proc->tv = now;
@@ -149,9 +146,7 @@ void fpm_request_info() /* {{{ */
 	if (script_filename) {
 		strlcpy(proc->script_filename, script_filename, sizeof(proc->script_filename));
 	}
-	// wensheng comment:--
-	theVlog("请求信息：[method:%s uri:%s]", proc->request_method, proc->request_uri);
-	// --:end
+
 	fpm_scoreboard_proc_release(proc);
 }
 /* }}} */

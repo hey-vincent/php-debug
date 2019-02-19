@@ -180,12 +180,15 @@ static void sig_handler(int signo) /* {{{ */
 
 int fpm_signals_init_main() /* {{{ */
 {
+	wenshengLog("SP 初始化：%d -- %d", sp[0], sp[1]);
 	struct sigaction act;
 
 	if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, sp)) {
 		zlog(ZLOG_SYSERROR, "failed to init signals: socketpair()");
 		return -1;
 	}
+
+	wenshengLog("SP 初始化：%d -- %d", sp[0], sp[1]);
 
 	if (0 > fd_set_blocked(sp[0], 0) || 0 > fd_set_blocked(sp[1], 0)) {
 		zlog(ZLOG_SYSERROR, "failed to init signals: fd_set_blocked()");

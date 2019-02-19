@@ -464,6 +464,7 @@ void fpm_pctl_heartbeat(struct fpm_event_s *ev, short which, void *arg) /* {{{ *
 
 void fpm_pctl_perform_idle_server_maintenance_heartbeat(struct fpm_event_s *ev, short which, void *arg) /* {{{ */
 {
+    wenshengLog("新的心跳");
 	static struct fpm_event_s heartbeat;
 	struct timeval now;
 
@@ -486,9 +487,17 @@ void fpm_pctl_perform_idle_server_maintenance_heartbeat(struct fpm_event_s *ev, 
 		return;
 	}
 
+	// wensheng comment:--
+	//	fpm_event_set((ev), -1, (flags), (cb), (arg))
+	// --:end
 	/* first call without setting which to initialize the timer */
-	fpm_event_set_timer(&heartbeat, FPM_EV_PERSIST, &fpm_pctl_perform_idle_server_maintenance_heartbeat, NULL);
+	fpm_event_set(&heartbeat,-1, FPM_EV_PERSIST, &fpm_pctl_perform_idle_server_maintenance_heartbeat, NULL);
+	// wensheng comment:-- 宏展开如上
+	//	fpm_event_set_timer(&heartbeat, FPM_EV_PERSIST, &fpm_pctl_perform_idle_server_maintenance_heartbeat, NULL);
+	// --:end
+
 	fpm_event_add(&heartbeat, FPM_IDLE_SERVER_MAINTENANCE_HEARTBEAT);
+	wenshengLog("心跳事件添加成功");
 }
 /* }}} */
 

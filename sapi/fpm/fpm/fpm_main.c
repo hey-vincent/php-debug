@@ -1574,7 +1574,7 @@ static zend_module_entry cgi_module_entry = {
  */
 int main(int argc, char *argv[])
 {
-	theVlog("starting main func execution ");
+	wenshengLog("starting main func execution ");
 	int exit_status = FPM_EXIT_OK;
 	int cgi = 0, c, use_extended_info = 0;
 	zend_file_handle file_handle;
@@ -1638,7 +1638,7 @@ int main(int argc, char *argv[])
 #endif
 
 	while ((c = php_getopt(argc, argv, OPTIONS, &php_optarg, &php_optind, 0, 2)) != -1) {
-		theVlog("c is: %c", c);
+		wenshengLog("c is: %c", c);
 		switch (c) {
 			case 'c':
 				if (cgi_sapi_module.php_ini_path_override) {
@@ -1888,13 +1888,13 @@ consult the installation file that came with this distribution, or visit \n\
 	fcgi_fd = fpm_run(&max_requests);
 	parent = 0;
 
-//	theVlog("what?? %s", fpm_worker_all_pools->config->name);
+//	wenshengLog("what?? %s", fpm_worker_all_pools->config->name);
 //	// wensheng comment:--
 //	for (struct fpm_worker_pool_s *pw= fpm_worker_all_pools;  pw ; pw = pw->next) {
-//		theVlog("pools name: %s", pw->config->name);
+//		wenshengLog("pools name: %s", pw->config->name);
 //		if (pw->config && pw->config->name && 0 == strcmp(pw->config->name, "www")){
 //			for(struct fpm_scoreboard_proc_s **px = pw->scoreboard->procs; px; px++){
-//				theVlog("polls elements:%d", (*px)->pid);
+//				wenshengLog("polls elements:%d", (*px)->pid);
 //			}
 //		}
 //	}

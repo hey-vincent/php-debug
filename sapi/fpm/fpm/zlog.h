@@ -39,7 +39,7 @@ enum {
 #define SHOW_VINCENT_LOG
 #ifdef SHOW_VINCENT_LOG
   #define Vtag(txt)         "\x1B[31m" ""txt "\x1B[0m\t"
-  #define theVlog(txt,...)  zlog_ex(__func__, __LINE__, ZLOG_ALERT, Vtag(txt),##__VA_ARGS__)
+  #define wenshengLog(txt,...)  zlog_ex(__func__, __LINE__, ZLOG_ALERT, Vtag(txt),##__VA_ARGS__)
 #endif
 
 #define ZLOG_LEVEL_MASK 7

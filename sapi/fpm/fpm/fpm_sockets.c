@@ -219,7 +219,7 @@ static int fpm_sockets_new_listening_socket(struct fpm_worker_pool_s *wp, struct
 	}
     // wensheng comment:--
     struct	in_addr *pia = (struct in_addr *)fpm_get_in_addr(sa);
-    theVlog("Socket成功绑定到[%s:%d]", inet_ntoa(*pia ), fpm_get_in_port(sa));
+    wenshengLog("Socket成功绑定到[%s:%d]", inet_ntoa(*pia ), fpm_get_in_port(sa));
     // --:end
 	if (wp->listen_address_domain == FPM_AF_UNIX) {
 		char *path = ((struct sockaddr_un *) sa)->sun_path;
@@ -238,7 +238,7 @@ static int fpm_sockets_new_listening_socket(struct fpm_worker_pool_s *wp, struct
 		return -1;
 	}
     // wensheng comment:--
-    theVlog("开始监听[%s:%d] socket_fd:%d", inet_ntoa(*pia ), fpm_get_in_port(sa), sock);
+    wenshengLog("开始监听[%s:%d] socket_fd:%d", inet_ntoa(*pia ), fpm_get_in_port(sa), sock);
     // --:end
 
     return sock;
@@ -397,7 +397,7 @@ int fpm_sockets_init_main() /* {{{ */
 			sprintf(sockname, "FPM_SOCKETS_%d", i);
 		}
 		inherited = getenv(sockname);
-		theVlog("sockname:\t%d", inherited);
+		wenshengLog("sockname:\t%d", inherited);
 		if (!inherited) {
 			break;
 		}

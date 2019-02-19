@@ -21,6 +21,7 @@
 #include "fpm_stdio.h"
 #include "fpm_log.h"
 #include "zlog.h"
+#include <execinfo.h>
 
 struct fpm_globals_s fpm_globals = {
 	.parent_pid = 0,
@@ -45,12 +46,12 @@ struct fpm_globals_s fpm_globals = {
 int fpm_init(int argc, char **argv, char *config, char *prefix, char *pid, int test_conf, int run_as_root, int force_daemon, int force_stderr) /* {{{ */
 {
 	// vincent comment notes: 2019-01-03 HERE maybe the first time that fpm_globals beeing assigned
-	theVlog("Fpm 初始化(%d,%s,%d,%s,%d,%d,%d)",argc, *argv, prefix, pid, run_as_root, force_daemon, force_stderr);
+	wenshengLog("Fpm 初始化(%d,%s,%d,%s,%d,%d,%d)",argc, *argv, prefix, pid, run_as_root, force_daemon, force_stderr);
 	fpm_globals.argc = argc;
 	fpm_globals.argv = argv;
 	// vincent comment notes: 2019-01-03   没有额外配置参数的时候config = null
 	if (config && *config) {
-		theVlog("fpm_init is being called since config passed");
+		wenshengLog("fpm_init is being called since config passed");
 		fpm_globals.config = strdup(config);
 	}
 	fpm_globals.prefix = prefix;
@@ -98,18 +99,29 @@ int fpm_init(int argc, char **argv, char *config, char *prefix, char *pid, int t
 	parent: never return */
 int fpm_run(int *max_requests) /* {{{ */
 {
-	// wensheng comment
-	theVlog("开始运行Fpm");
-	// wensheng comment end
-
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
+    wenshengLog("=                                                              =");
+    wenshengLog("=                                                              =");
+    wenshengLog("=                                                              =");
+    wenshengLog("=                    开始启动FPM                               =");
+    wenshengLog("=                                                              =");
+    wenshengLog("=                                                              =");
+    wenshengLog("=                                                              =");
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
+    wenshengLog("================================================================");
 	struct fpm_worker_pool_s *wp;
 
 	/* create initial children in all pools */
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
 		int is_parent;
-        // wensheng comment:--
-        theVlog("当前pool: %s", wp->config->name);
-        // 父进程返回 > 0, 子进程 和 失败 返回 0 -1
+
+		// wensheng comment:--
+        // 父进程返回 2, 子进程 和 失败 返回 0 -1
         // --:end
 		is_parent = fpm_children_create_initial(wp);
 		if (!is_parent) {
@@ -134,3 +146,19 @@ run_child: /* only workers reach this point */
 	return fpm_globals.listening_socket;
 }
 /* }}} */
+
+
+//wensheng add
+void traceLog(char *fl){
+    if(fl){
+        wenshengLog("%s", fl);
+    }
+    const int max_trace_count = 64;
+    void *trace[max_trace_count];
+    memset(trace, 0,max_trace_count * sizeof(void*));
+    int trace_count = backtrace(trace, max_trace_count);
+    char **smb = (char **)backtrace_symbols(trace, trace_count);
+    for (int ti = 0; ti < trace_count; ++ti) {
+        wenshengLog("%s",smb[ti]);
+    }
+}

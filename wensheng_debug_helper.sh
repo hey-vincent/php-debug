@@ -21,6 +21,11 @@ function start(){
 	/Users/momo/helloworld/github/php-debug/sapi/fpm/php-fpm
 }
 
+function remakeV1(){
+    clear
+    remake
+    tail -f /usr/local/var/log/php-fpm.log
+}
 
 function restart(){
 	killall php-fpm
@@ -30,7 +35,7 @@ function restart(){
 
 if [ $1 = "remake" ]
 then
-	remake
+	remakeV1
 elif [ $1 = "restart" ]
 then
 	restart

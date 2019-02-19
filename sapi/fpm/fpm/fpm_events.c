@@ -52,6 +52,22 @@ static void fpm_event_cleanup(int which, void *arg) /* {{{ */
 }
 /* }}} */
 
+void queueLen(){
+    int l = 0,k = 0;
+    struct fpm_event_queue_s * p1 = fpm_event_queue_timer;
+    while(p1){
+        l++;
+        p1 = p1->next;
+    }
+
+    struct fpm_event_queue_s *p2 = fpm_event_queue_fd;
+    while(p2){
+        k++;
+        p2 = p2->next;
+    }
+    wenshengLog("队列长度：fpm_event_queue_timer = %d \tfpm_event_queue_fd = %d", l,k);
+}
+
 static void fpm_got_signal(struct fpm_event_s *ev, short which, void *arg) /* {{{ */
 {
 	char c;
@@ -141,6 +157,7 @@ static struct fpm_event_s *fpm_event_queue_isset(struct fpm_event_queue_s *queue
 
 static int fpm_event_queue_add(struct fpm_event_queue_s **queue, struct fpm_event_s *ev) /* {{{ */
 {
+//    wenshengLog("fpm_event_queue_add>>开始往事件链表%p中添加事件:%p", queue? *queue : 0,  ev );
 	struct fpm_event_queue_s *elt;
 
 	if (!queue || !ev) {
@@ -176,6 +193,7 @@ static int fpm_event_queue_add(struct fpm_event_queue_s **queue, struct fpm_even
 
 static int fpm_event_queue_del(struct fpm_event_queue_s **queue, struct fpm_event_s *ev) /* {{{ */
 {
+    wenshengLog("删除！fpm_event_queue_del>>开始从事件链表%p中删除事件:%p", queue? *queue : 0,  ev );
 	struct fpm_event_queue_s *q;
 	if (!queue || !ev) {
 		return -1;
@@ -235,6 +253,7 @@ static void fpm_event_queue_destroy(struct fpm_event_queue_s **queue) /* {{{ */
 
 int fpm_event_pre_init(char *machanism) /* {{{ */
 {
+	wenshengLog("事件module初始化 machanism = %s",machanism );
 	/* kqueue */
 	module = fpm_event_kqueue_module();
 	if (module) {
@@ -344,6 +363,12 @@ int fpm_event_init_main() /* {{{ */
 
 void fpm_event_loop(int err) /* {{{ */
 {
+    wenshengLog("");
+    wenshengLog("");
+    wenshengLog("");
+    wenshengLog("");
+    wenshengLog("开始调用事件轮询: fpm_event_loop（%d）", err);
+    queueLen();
 	static struct fpm_event_s signal_fd_event;
 
 	/* sanity check */
@@ -369,6 +394,9 @@ void fpm_event_loop(int err) /* {{{ */
 		fpm_systemd_heartbeat(NULL, 0, NULL);
 #endif
 	}
+	// wensheng comment:--
+	int event_q_size = 0;
+	// --:end
 
 	while (1) {
 		struct fpm_event_queue_s *q, *q2;
@@ -406,7 +434,8 @@ void fpm_event_loop(int err) /* {{{ */
 			timersub(&ms, &now, &tmp);
 			timeout = (tmp.tv_sec * 1000) + (tmp.tv_usec / 1000) + 1;
 		}
-
+		// wensheng comment:--
+		// 默认 fpm_event_kqueue_wait// --:end
 		ret = module->wait(fpm_event_queue_fd, timeout);
 
 		/* is a child, nothing to do here */
@@ -415,21 +444,31 @@ void fpm_event_loop(int err) /* {{{ */
 		}
 
 		if (ret > 0) {
+			wenshengLog("检查到FD链有信号的事件个数: %d",ret);
 			zlog(ZLOG_DEBUG, "event module triggered %d events", ret);
 		}
 
 		/* trigger timers */
 		q = fpm_event_queue_timer;
 		while (q) {
+            // wensheng comment:--
+            ++event_q_size;
+            // --:end
+
 			fpm_clock_get(&now);
 			if (q->ev) {
+				// wensheng comment:--
+//				wenshengLog("心跳队列有事件:%s\t %d，计算出的index%d",fm_event_tag(q->ev->flags), q->ev->index, event_q_size);
+				// --:end
+
 				if (timercmp(&now, &q->ev->timeout, >) || timercmp(&now, &q->ev->timeout, ==)) {
 					fpm_event_fire(q->ev);
 					/* sanity check */
 					if (fpm_globals.parent_pid != getpid()) {
 						return;
 					}
-					if (q->ev->flags & FPM_EV_PERSIST) {
+
+                    if (q->ev->flags & FPM_EV_PERSIST) {
 						fpm_event_set_timeout(q->ev, now);
 					} else { /* delete the event */
 						q2 = q;
@@ -495,9 +534,11 @@ int fpm_event_add(struct fpm_event_s *ev, unsigned long int frequency) /* {{{ */
 	/* it's a triggered event on incoming data */
 	if (ev->flags & FPM_EV_READ) {
 		ev->which = FPM_EV_READ;
+		wenshengLog("向fpm_event_queue_fd链表中添加%s事件:%p", fm_event_tag(ev->flags),ev);
 		if (fpm_event_queue_add(&fpm_event_queue_fd, ev) != 0) {
 			return -1;
 		}
+		queueLen();
 		return 0;
 	}
 

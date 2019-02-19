@@ -1411,12 +1411,12 @@ int fcgi_accept_request(fcgi_request *req)
 
 					FCGI_LOCK(req->listen_socket);
 					// wensheng comment:--
-					fcgi_log(FCGI_WARNING, "开始accept socket_fd:%d", req->listen_socket);
+					fcgi_log(FCGI_DEBUG, "开始accept socket_fd:%d", req->listen_socket);
 					// --:end
 					req->fd = accept(listen_socket, (struct sockaddr *)&sa, &len);
 					FCGI_UNLOCK(req->listen_socket);
 					// wensheng comment:--
-					fcgi_log(FCGI_WARNING, "进程：%d, socket_fd:%d 读到请求", getpid(), req->listen_socket );
+					fcgi_log(FCGI_DEBUG, "进程：%d, socket_fd:%d 读到请求", getpid(), req->listen_socket );
 					// --:end
 
 					client_sa = sa;
@@ -1457,6 +1457,7 @@ int fcgi_accept_request(fcgi_request *req)
 						fcgi_log(FCGI_WARNING, "do pool() = %d ", ret);
 					} while (ret < 0 && errno == EINTR);
 					if (ret > 0 && (fds.revents & POLLIN)) {
+						fcgi_log(FCGI_WARNING, "beak", ret);
 						break;
 					}
 					fcgi_close(req, 1, 0);
@@ -1488,6 +1489,7 @@ int fcgi_accept_request(fcgi_request *req)
 			return -1;
 		}
 		req->hook.on_read();
+
         if (fcgi_read_request(req)) {
 #ifdef _WIN32
 			if (is_impersonate && !req->tcp) {

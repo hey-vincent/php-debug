@@ -73,6 +73,7 @@ struct fpm_event_module_s *fpm_event_kqueue_module() /* {{{ */
  */
 static int fpm_event_kqueue_init(int max) /* {{{ */
 {
+	wenshengLog("初始化Kqueue, max = %d", max);
 	if (max < 1) {
 		return 0;
 	}

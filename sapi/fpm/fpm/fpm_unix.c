@@ -445,7 +445,7 @@ int fpm_unix_init_main() /* {{{ */
 	struct fpm_worker_pool_s *wp;
 	int is_root = !geteuid();
 	// vincent comment notes: 2019-01-04 log
-	theVlog("设置打开FD数量限制(%d)", fpm_global_config.rlimit_files);
+	wenshengLog("设置打开FD数量限制(%d)", fpm_global_config.rlimit_files);
 	if (fpm_global_config.rlimit_files) {
 		struct rlimit r;
 
@@ -457,7 +457,7 @@ int fpm_unix_init_main() /* {{{ */
 		}
 	}
 
-	theVlog("rlimit_core(%d)", fpm_global_config.rlimit_core);
+	wenshengLog("rlimit_core(%d)", fpm_global_config.rlimit_core);
 	if (fpm_global_config.rlimit_core) {
 		struct rlimit r;
 
@@ -469,7 +469,7 @@ int fpm_unix_init_main() /* {{{ */
 		}
 	}
 
-	theVlog("daemonize(%d)", fpm_global_config.daemonize);
+	wenshengLog("daemonize(%d)", fpm_global_config.daemonize);
 	fpm_pagesize = getpagesize();
 	if (fpm_global_config.daemonize) {
 		/*
@@ -493,12 +493,12 @@ int fpm_unix_init_main() /* {{{ */
 			zlog(ZLOG_SYSERROR, "failed to create pipe");
 			return -1;
 		}
-		theVlog("管道创建成功,[%d, %d]", fpm_globals.send_config_pipe[0], fpm_globals.send_config_pipe[1]);
+		wenshengLog("管道创建成功,[%d, %d]", fpm_globals.send_config_pipe[0], fpm_globals.send_config_pipe[1]);
 
 		/* then fork */
 		pid_t pid = fork();
 		// vincent comment notes: 2019-01-04 fork
-		theVlog("创建worker进程:%d", pid);
+		wenshengLog("创建worker进程:%d", pid);
 		switch (pid) {
 
 			case -1 : /* error */
@@ -506,13 +506,13 @@ int fpm_unix_init_main() /* {{{ */
 				return -1;
 
 			case 0 : /* children */
-				theVlog("Child 进程 %d 关闭管道读",getpid());
+				wenshengLog("Child 进程 %d 关闭管道读",getpid());
 				close(fpm_globals.send_config_pipe[0]); /* close the read side of the pipe */
 				break;
 
 			default : /* parent */
 				close(fpm_globals.send_config_pipe[1]); /* close the write side of the pipe */
-				theVlog("Parent 进程 %d 关闭管道写",getpid());
+				wenshengLog("Parent 进程 %d 关闭管道写",getpid());
 				/*
 				 * wait for 10s before exiting with error
 				 * the child is supposed to send 1 or 0 into the pipe to tell the parent
