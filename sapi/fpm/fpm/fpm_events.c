@@ -52,9 +52,10 @@ static void fpm_event_cleanup(int which, void *arg) /* {{{ */
 }
 /* }}} */
 
-void queueLen(){
-    int l = 0,k = 0;
+void queueMonitor(){
+    int l = 0,k = 0, index = 1;
     struct fpm_event_queue_s * p1 = fpm_event_queue_timer;
+    char log[128] = "{";
     while(p1){
         l++;
         p1 = p1->next;
@@ -63,9 +64,12 @@ void queueLen(){
     struct fpm_event_queue_s *p2 = fpm_event_queue_fd;
     while(p2){
         k++;
+        int r = sprintf(log + index, "%d, ", p2->ev->fd);
+        index += r;
         p2 = p2->next;
     }
-    wenshengLog("队列长度：fpm_event_queue_timer = %d \tfpm_event_queue_fd = %d", l,k);
+    log[index++] = '}';
+    wenshengLog("队列长度：fpm_event_queue_timer = %d \tfpm_event_queue_fd = %d fds:%s", l,k, log);
 }
 
 static void fpm_got_signal(struct fpm_event_s *ev, short which, void *arg) /* {{{ */
@@ -157,7 +161,7 @@ static struct fpm_event_s *fpm_event_queue_isset(struct fpm_event_queue_s *queue
 
 static int fpm_event_queue_add(struct fpm_event_queue_s **queue, struct fpm_event_s *ev) /* {{{ */
 {
-//    wenshengLog("fpm_event_queue_add>>开始往事件链表%p中添加事件:%p", queue? *queue : 0,  ev );
+    // wenshengLog("fpm_event_queue_add>>开始往事件链表%p中添加事件:%p", queue? *queue : 0,  ev );
 	struct fpm_event_queue_s *elt;
 
 	if (!queue || !ev) {
@@ -363,12 +367,8 @@ int fpm_event_init_main() /* {{{ */
 
 void fpm_event_loop(int err) /* {{{ */
 {
-    wenshengLog("");
-    wenshengLog("");
-    wenshengLog("");
-    wenshengLog("");
-    wenshengLog("开始调用事件轮询: fpm_event_loop（%d）", err);
-    queueLen();
+    wenshengLog("开始轮询事件", err);
+    queueMonitor();
 	static struct fpm_event_s signal_fd_event;
 
 	/* sanity check */
@@ -379,7 +379,9 @@ void fpm_event_loop(int err) /* {{{ */
 	fpm_event_set(&signal_fd_event, fpm_signals_get_fd(), FPM_EV_READ, &fpm_got_signal, NULL);
 	fpm_event_add(&signal_fd_event, 0);
 
-	/* add timers */
+    wenshengLog("fpm_globals.heartbeat = %d", fpm_globals.heartbeat);
+
+    /* add timers */
 	if (fpm_globals.heartbeat > 0) {
 		fpm_pctl_heartbeat(NULL, 0, NULL);
 	}
@@ -394,9 +396,6 @@ void fpm_event_loop(int err) /* {{{ */
 		fpm_systemd_heartbeat(NULL, 0, NULL);
 #endif
 	}
-	// wensheng comment:--
-	int event_q_size = 0;
-	// --:end
 
 	while (1) {
 		struct fpm_event_queue_s *q, *q2;
@@ -420,6 +419,7 @@ void fpm_event_loop(int err) /* {{{ */
 			if (!timerisset(&ms)) {
 				ms = q->ev->timeout;
 			} else {
+			    wenshengLog("Never be triggered");
 				if (timercmp(&q->ev->timeout, &ms, <)) {
 					ms = q->ev->timeout;
 				}
@@ -434,8 +434,7 @@ void fpm_event_loop(int err) /* {{{ */
 			timersub(&ms, &now, &tmp);
 			timeout = (tmp.tv_sec * 1000) + (tmp.tv_usec / 1000) + 1;
 		}
-		// wensheng comment:--
-		// 默认 fpm_event_kqueue_wait// --:end
+		// wensheng comment:-- 默认 fpm_event_kqueue_wait --:end
 		ret = module->wait(fpm_event_queue_fd, timeout);
 
 		/* is a child, nothing to do here */
@@ -448,6 +447,10 @@ void fpm_event_loop(int err) /* {{{ */
 			zlog(ZLOG_DEBUG, "event module triggered %d events", ret);
 		}
 
+        // wensheng comment:--
+        int event_q_size = 0;
+        // --:end
+
 		/* trigger timers */
 		q = fpm_event_queue_timer;
 		while (q) {
@@ -458,7 +461,7 @@ void fpm_event_loop(int err) /* {{{ */
 			fpm_clock_get(&now);
 			if (q->ev) {
 				// wensheng comment:--
-//				wenshengLog("心跳队列有事件:%s\t %d，计算出的index%d",fm_event_tag(q->ev->flags), q->ev->index, event_q_size);
+				// wenshengLog("心跳队列有事件:%s\t %d，计算出的index = %d",fm_event_tag(q->ev->flags), q->ev->index, event_q_size);
 				// --:end
 
 				if (timercmp(&now, &q->ev->timeout, >) || timercmp(&now, &q->ev->timeout, ==)) {
@@ -538,7 +541,7 @@ int fpm_event_add(struct fpm_event_s *ev, unsigned long int frequency) /* {{{ */
 		if (fpm_event_queue_add(&fpm_event_queue_fd, ev) != 0) {
 			return -1;
 		}
-		queueLen();
+		queueMonitor();
 		return 0;
 	}
 

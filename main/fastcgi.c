@@ -1372,7 +1372,7 @@ int fcgi_accept_request(fcgi_request *req)
 #endif
 
 	while (1) {
-		if (req->fd < 0) {
+	    if (req->fd < 0) {
 			while (1) {
 				if (in_shutdown) {
 					return -1;
@@ -1406,8 +1406,8 @@ int fcgi_accept_request(fcgi_request *req)
 #endif
 					sa_t sa;
 					socklen_t len = sizeof(sa);
-
-					req->hook.on_accept();
+                    // wensheng comment:-- sd fpm_request_accepting  --:end
+                    req->hook.on_accept();
 
 					FCGI_LOCK(req->listen_socket);
 					// wensheng comment:--
@@ -1450,15 +1450,15 @@ int fcgi_accept_request(fcgi_request *req)
 					do {
 						errno = 0;
                         // wensheng comment:--
-                        // TODO 为什么要用pool? 而且我这里已经accept到了  直接读不行吗
+                        // TODO 为什么要用pool? 而且我这里已经accept到了  直接阻塞recv不行吗
                         // TODO: 为什么只poll这一个进程的FD？
                         // --:end
                         ret = poll(&fds, 1, 5000);
-						fcgi_log(FCGI_WARNING, "do pool() = %d ", ret);
 					} while (ret < 0 && errno == EINTR);
+					// wensheng add comment- accept之后不太可能超时
 					if (ret > 0 && (fds.revents & POLLIN)) {
-						fcgi_log(FCGI_WARNING, "beak", ret);
-						break;
+					    fcgi_log(FCGI_WARNING, "读到链接%d有请求到来", req->fd);
+					    break;
 					}
 					fcgi_close(req, 1, 0);
 #else
@@ -1488,7 +1488,8 @@ int fcgi_accept_request(fcgi_request *req)
 		} else if (in_shutdown) {
 			return -1;
 		}
-		req->hook.on_read();
+        // wensheng comment:-- 上面accept到请求之后跳到这里 回调fpm_request_reading_headers --:end
+        req->hook.on_read();
 
         if (fcgi_read_request(req)) {
 #ifdef _WIN32

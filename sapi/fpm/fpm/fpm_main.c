@@ -1876,29 +1876,18 @@ consult the installation file that came with this distribution, or visit \n\
 		}
 		return FPM_EXIT_CONFIG;
 	}
-
+    wenshengLog("主进程检查：Master0管道：写端：%d", fpm_globals.send_config_pipe[1]);
 	if (fpm_globals.send_config_pipe[1]) {
 		int writeval = 1;
 		zlog(ZLOG_DEBUG, "Sending \"1\" (OK) to parent via fd=%d", fpm_globals.send_config_pipe[1]);
 		zend_quiet_write(fpm_globals.send_config_pipe[1], &writeval, sizeof(writeval));
 		close(fpm_globals.send_config_pipe[1]);
+		wenshengLog("Master0管道：写端：%d", fpm_globals.send_config_pipe[1]);
 	}
 	fpm_is_running = 1;
 	// wensheng comment notes: 2018-12-25 创建子进程
 	fcgi_fd = fpm_run(&max_requests);
 	parent = 0;
-
-//	wenshengLog("what?? %s", fpm_worker_all_pools->config->name);
-//	// wensheng comment:--
-//	for (struct fpm_worker_pool_s *pw= fpm_worker_all_pools;  pw ; pw = pw->next) {
-//		wenshengLog("pools name: %s", pw->config->name);
-//		if (pw->config && pw->config->name && 0 == strcmp(pw->config->name, "www")){
-//			for(struct fpm_scoreboard_proc_s **px = pw->scoreboard->procs; px; px++){
-//				wenshengLog("polls elements:%d", (*px)->pid);
-//			}
-//		}
-//	}
-	// --:end
 
 	/* onced forked tell zlog to also send messages through sapi_cgi_log_fastcgi() */
 	zlog_set_external_logger(sapi_cgi_log_fastcgi);
@@ -1918,6 +1907,11 @@ consult the installation file that came with this distribution, or visit \n\
 			init_request_info();
 
 			fpm_request_info();
+
+			// wensheng comment:--
+			char *test_txt = "已经把标准输出FD绑定到当前子进程的事件FD里了，现在我只要向标准输出写数据，Master就会收集到";
+			write(STDOUT_FILENO, test_txt, strlen(test_txt) );
+			// --:end
 
 			/* request startup only after we've done all we can to
 			 *            get path_translated */

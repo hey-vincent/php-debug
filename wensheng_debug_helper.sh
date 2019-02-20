@@ -35,7 +35,7 @@ function restart(){
 
 if [ $1 = "remake" ]
 then
-	remakeV1
+	remake
 elif [ $1 = "restart" ]
 then
 	restart

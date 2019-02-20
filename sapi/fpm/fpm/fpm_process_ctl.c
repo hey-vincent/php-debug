@@ -464,7 +464,7 @@ void fpm_pctl_heartbeat(struct fpm_event_s *ev, short which, void *arg) /* {{{ *
 
 void fpm_pctl_perform_idle_server_maintenance_heartbeat(struct fpm_event_s *ev, short which, void *arg) /* {{{ */
 {
-    wenshengLog("新的心跳");
+//    wenshengLog("新的心跳");
 	static struct fpm_event_s heartbeat;
 	struct timeval now;
 

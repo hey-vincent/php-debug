@@ -120,9 +120,7 @@ int fpm_run(int *max_requests) /* {{{ */
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
 		int is_parent;
 
-		// wensheng comment:--
-        // 父进程返回 2, 子进程 和 失败 返回 0 -1
-        // --:end
+		// wensheng comment:-- 父进程返回 2, 子进程 和 失败 返回 0 -1  --:end
 		is_parent = fpm_children_create_initial(wp);
 		if (!is_parent) {
 			goto run_child;

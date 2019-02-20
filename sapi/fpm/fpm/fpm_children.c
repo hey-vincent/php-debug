@@ -361,6 +361,7 @@ static void fpm_child_resources_use(struct fpm_child_s *child) /* {{{ */
 	// --:end
 	fpm_scoreboard_child_use(child->wp->scoreboard, child->scoreboard_i, getpid());
 	fpm_stdio_child_use_pipes(child);
+	wenshengLog("新FD:child(%d,%d)", child->fd_stdout, child->fd_stderr);
 	fpm_child_free(child);
 }
 /* }}} */
@@ -439,10 +440,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 				fpm_parent_resources_use(child);
 				zlog(is_debug ? ZLOG_DEBUG : ZLOG_NOTICE, "[pool %s] child %d started", wp->config->name, (int) pid);
                 wenshengLog("================================================================");
-                wenshengLog("=                                                              =");
                 wenshengLog("=                   子进程%d创建完                             =",pid);
-                wenshengLog("=                                                              =");
-                wenshengLog("=                                                              =");
                 wenshengLog("================================================================");
 
         }
