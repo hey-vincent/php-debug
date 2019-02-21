@@ -308,6 +308,7 @@ static void fpm_pctl_check_request_timeout(struct timeval *now) /* {{{ */
 
 static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{ */
 {
+    wenshengLog("空闲检查");
 	struct fpm_worker_pool_s *wp;
 
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
@@ -473,6 +474,7 @@ void fpm_pctl_perform_idle_server_maintenance_heartbeat(struct fpm_event_s *ev, 
 	}
 
 	if (which == FPM_EV_TIMEOUT) {
+		wenshengLog("timeout!!!");
 		fpm_clock_get(&now);
 		if (fpm_pctl_can_spawn_children()) {
 			fpm_pctl_perform_idle_server_maintenance(&now);

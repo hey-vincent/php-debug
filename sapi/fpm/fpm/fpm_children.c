@@ -90,6 +90,16 @@ static void fpm_child_link(struct fpm_child_s *child) /* {{{ */
 {
     struct fpm_worker_pool_s *wp = child->wp;
 
+	++wp->running_children;
+	++fpm_globals.running_children;
+
+    child->next = wp->children;
+	if (child->next) {
+		child->next->prev = child;
+	}
+	child->prev = 0;
+	wp->children = child;
+
     // wensheng comment:--
     char xbuf[1024] = {0};
     xbuf[0] = '{';
@@ -100,16 +110,6 @@ static void fpm_child_link(struct fpm_child_s *child) /* {{{ */
     if (offset < 1023) xbuf[offset] ='}';
     wenshengLog("所有子进程：%s", xbuf);
     // --:end
-
-	++wp->running_children;
-	++fpm_globals.running_children;
-
-    child->next = wp->children;
-	if (child->next) {
-		child->next->prev = child;
-	}
-	child->prev = 0;
-	wp->children = child;
 }
 /* }}} */
 
@@ -328,7 +328,7 @@ static struct fpm_child_s *fpm_resources_prepare(struct fpm_worker_pool_s *wp) /
 		fpm_child_free(c);
 		return 0;
 	}
-    wenshengLog("管道%d==%d",c->fd_stdout, c->fd_stderr);
+
 	if (0 > fpm_scoreboard_proc_alloc(wp->scoreboard, &c->scoreboard_i)) {
 		fpm_stdio_discard_pipes(c);
 		fpm_child_free(c);
@@ -361,7 +361,6 @@ static void fpm_child_resources_use(struct fpm_child_s *child) /* {{{ */
 	// --:end
 	fpm_scoreboard_child_use(child->wp->scoreboard, child->scoreboard_i, getpid());
 	fpm_stdio_child_use_pipes(child);
-	wenshengLog("新FD:child(%d,%d)", child->fd_stdout, child->fd_stderr);
 	fpm_child_free(child);
 }
 /* }}} */

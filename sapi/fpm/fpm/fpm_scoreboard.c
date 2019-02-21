@@ -23,7 +23,9 @@ static float fpm_scoreboard_tick;
 
 int fpm_scoreboard_init_main() /* {{{ */
 {
-	wenshengLog("pm_worker_all_pools->config->pm_max_children(%d)", fpm_worker_all_pools->config->pm_max_children);
+	// wensheng comment:--
+	wenshengLog("开始初始化score_board");
+	// --:end
 	struct fpm_worker_pool_s *wp;
 	unsigned int i;
 
@@ -66,9 +68,6 @@ int fpm_scoreboard_init_main() /* {{{ */
 		wp->scoreboard         = shm_mem;
 		wp->scoreboard->nprocs = wp->config->pm_max_children;
 		shm_mem               += scoreboard_size;
-		// wensheng comment:--
-		wenshengLog("设置scoreboard.nprocs = %d", wp->config->pm_max_children );
-		// --:end
 		for (i = 0; i < wp->scoreboard->nprocs; i++, shm_mem += sizeof(struct fpm_scoreboard_proc_s)) {
 			wp->scoreboard->procs[i] = shm_mem;
 		}
@@ -217,6 +216,8 @@ struct fpm_scoreboard_proc_s *fpm_scoreboard_proc_acquire(struct fpm_scoreboard_
 {
 	struct fpm_scoreboard_proc_s *proc;
 
+	wenshengLog("不用传scoreboar_index，因为本进程的全局fpm_scoreboar_i = %d", fpm_scoreboard_i);
+
 	proc = fpm_scoreboard_proc_get(scoreboard, child_index);
 	if (!proc) {
 		return NULL;
@@ -265,7 +266,7 @@ void fpm_scoreboard_child_use(struct fpm_scoreboard_s *scoreboard, int child_ind
 	struct fpm_scoreboard_proc_s *proc;
 	fpm_scoreboard = scoreboard;
 	fpm_scoreboard_i = child_index;
-	wenshengLog("设置 fpm_scoreboard_i = %d", child_index );
+
 	proc = fpm_scoreboard_proc_get(scoreboard, child_index);
 	if (!proc) {
 		return;

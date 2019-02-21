@@ -459,6 +459,9 @@ void fpm_event_loop(int err) /* {{{ */
             // --:end
 
 			fpm_clock_get(&now);
+			// wensheng comment:--
+			wenshengLog("fpm time: %d.%d;  timer:%d.%d", now.tv_sec, now.tv_usec, q->ev->timeout.tv_sec,q->ev->timeout.tv_usec);
+			// --:end
 			if (q->ev) {
 				// wensheng comment:--
 				// wenshengLog("心跳队列有事件:%s\t %d，计算出的index = %d",fm_event_tag(q->ev->flags), q->ev->index, event_q_size);
@@ -472,6 +475,7 @@ void fpm_event_loop(int err) /* {{{ */
 					}
 
                     if (q->ev->flags & FPM_EV_PERSIST) {
+                        wenshengLog("设置心跳事件超时");
 						fpm_event_set_timeout(q->ev, now);
 					} else { /* delete the event */
 						q2 = q;

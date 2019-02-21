@@ -1410,14 +1410,8 @@ int fcgi_accept_request(fcgi_request *req)
                     req->hook.on_accept();
 
 					FCGI_LOCK(req->listen_socket);
-					// wensheng comment:--
-					fcgi_log(FCGI_DEBUG, "开始accept socket_fd:%d", req->listen_socket);
-					// --:end
 					req->fd = accept(listen_socket, (struct sockaddr *)&sa, &len);
 					FCGI_UNLOCK(req->listen_socket);
-					// wensheng comment:--
-					fcgi_log(FCGI_DEBUG, "进程：%d, socket_fd:%d 读到请求", getpid(), req->listen_socket );
-					// --:end
 
 					client_sa = sa;
 					if (req->fd >= 0 && !fcgi_is_allowed()) {
