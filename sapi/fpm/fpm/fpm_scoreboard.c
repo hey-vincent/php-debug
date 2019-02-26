@@ -216,7 +216,7 @@ struct fpm_scoreboard_proc_s *fpm_scoreboard_proc_acquire(struct fpm_scoreboard_
 {
 	struct fpm_scoreboard_proc_s *proc;
 
-	wenshengLog("不用传scoreboar_index，因为本进程的全局fpm_scoreboar_i = %d", fpm_scoreboard_i);
+	// wenshengLog("不用传scoreboar_index，因为本进程的全局fpm_scoreboar_i = %d", fpm_scoreboard_i);
 
 	proc = fpm_scoreboard_proc_get(scoreboard, child_index);
 	if (!proc) {
@@ -227,7 +227,7 @@ struct fpm_scoreboard_proc_s *fpm_scoreboard_proc_acquire(struct fpm_scoreboard_
 		return NULL;
 	}
 
-	wenshengLog("scoreboard加锁成功：%d", proc->lock);
+//	wenshengLog("scoreboard加锁成功：%d", proc->lock);
 
 	return proc;
 }
@@ -241,7 +241,7 @@ void fpm_scoreboard_proc_release(struct fpm_scoreboard_proc_s *proc) /* {{{ */
 
 	proc->lock = 0;
 	// wensheng comment:--
-	wenshengLog("scoreboard锁释放成功：%d", proc->lock);
+//	wenshengLog("scoreboard锁释放成功：%d", proc->lock);
 	// --:end
 }
 

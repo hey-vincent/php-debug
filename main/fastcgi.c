@@ -1067,9 +1067,7 @@ static int fcgi_read_request(fcgi_request *req)
 	    hdr.version < FCGI_VERSION_1) {
 		return 0;
 	}
-    // wensheng comment:--
-    fcgi_log(FCGI_WARNING,"读到fcgi header [type:%d, version:%d]", hdr.type, hdr.version);
-    // --:end
+    // wensheng comment:-- fcgi_log(FCGI_WARNING,"读到fcgi header [type:%d, version:%d]", hdr.type, hdr.version); // --:end
 	len = (hdr.contentLengthB1 << 8) | hdr.contentLengthB0;
 	padding = hdr.paddingLength;
 
@@ -1375,7 +1373,8 @@ int fcgi_accept_request(fcgi_request *req)
 	    if (req->fd < 0) {
 			while (1) {
 				if (in_shutdown) {
-					return -1;
+					fcgi_log(FCGI_WARNING, "终止fpm");
+				    return -1;
 				}
 #ifdef _WIN32
 				if (!req->tcp) {
@@ -1451,7 +1450,7 @@ int fcgi_accept_request(fcgi_request *req)
 					} while (ret < 0 && errno == EINTR);
 					// wensheng add comment- accept之后不太可能超时
 					if (ret > 0 && (fds.revents & POLLIN)) {
-					    fcgi_log(FCGI_WARNING, "读到链接%d有请求到来", req->fd);
+					    //wensehng comment: // fcgi_log(FCGI_WARNING, "读到链接%d有请求到来", req->fd);
 					    break;
 					}
 					fcgi_close(req, 1, 0);

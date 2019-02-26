@@ -64,11 +64,13 @@ static void fpm_child_free(struct fpm_child_s *child) /* {{{ */
 
 static void fpm_child_close(struct fpm_child_s *child, int in_event_loop) /* {{{ */
 {
+    wenshengLog("开始关闭fpm child: pid = %d", child->pid);
 	if (child->fd_stdout != -1) {
 		if (in_event_loop) {
 			fpm_event_fire(&child->ev_stdout);
 		}
 		if (child->fd_stdout != -1) {
+		    wenshengLog("关闭pid:%d的标准输出fd=%d", child->pid, child->fd_stdout);
 			close(child->fd_stdout);
 		}
 	}
@@ -410,7 +412,7 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 
 		warned = 0;
 		child = fpm_resources_prepare(wp);
-		wenshengLog("子进程Event:%d,%d", child->ev_stderr, child->ev_stdout);
+		wenshengLog("子进程事件: stderr = %d, stdout = %d", child->fd_stderr , child->fd_stdout);
 
 		if (!child) {
 			return 2;
@@ -438,11 +440,14 @@ int fpm_children_make(struct fpm_worker_pool_s *wp, int in_event_loop, int nb_to
 				fpm_clock_get(&child->started);
 				fpm_parent_resources_use(child);
 				zlog(is_debug ? ZLOG_DEBUG : ZLOG_NOTICE, "[pool %s] child %d started", wp->config->name, (int) pid);
-                wenshengLog("================================================================");
-                wenshengLog("=                   子进程%d创建完                             =",pid);
-                wenshengLog("================================================================");
 
-        }
+				// wensheng comment
+				queueMonitor();
+                wenshengLog("================================================================");
+                wenshengLog("=                   子进程%d创建完                           =",pid);
+				wenshengLog("================================================================");
+
+		}
 
 	}
 

@@ -138,6 +138,7 @@ int fpm_pctl_kill(pid_t pid, int how) /* {{{ */
 		default :
 			break;
 	}
+	wenshengLog("Kill进程%d", pid);
 	return kill(pid, s);
 }
 /* }}} */
@@ -308,7 +309,6 @@ static void fpm_pctl_check_request_timeout(struct timeval *now) /* {{{ */
 
 static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{ */
 {
-    wenshengLog("空闲检查");
 	struct fpm_worker_pool_s *wp;
 
 	for (wp = fpm_worker_all_pools; wp; wp = wp->next) {
@@ -335,6 +335,14 @@ static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{
 				active++;
 			}
 		}
+
+		// wensheng comment:--
+//		if (strcmp(wp->config->name , "www") == 0){
+//			wenshengLog("计分板信息：idle：%d， active:%d max_spare: %d last_idle:%d", wp->scoreboard->idle, wp->scoreboard->active,
+//						wp->config->pm_max_spare_servers, last_idle_child->pid);
+//		}
+
+		// --:end
 
 		/* update status structure for all PMs */
 		if (wp->listen_address_domain == FPM_AF_INET) {
@@ -375,10 +383,9 @@ static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{
 
 		/* the rest is only used by PM_STYLE_DYNAMIC */
 		if (wp->config->pm != PM_STYLE_DYNAMIC) continue;
-		// vincent comment notes: 2019-02-14
-//		zlog(ZLOG_DEBUG, "[pool %s] currently %d active children, %d spare children, %d running children. Spawning rate %d", wp->config->name, active, idle, wp->running_children, wp->idle_spawn_rate);
 
 		if (idle > wp->config->pm_max_spare_servers && last_idle_child) {
+			wenshengLog("需要kill最后一个idle子进程");
 			last_idle_child->idle_kill = 1;
 			fpm_pctl_kill(last_idle_child->pid, FPM_PCTL_QUIT);
 			wp->idle_spawn_rate = 1;
@@ -415,6 +422,10 @@ static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{
 				continue;
 			}
 			wp->warn_max_children = 0;
+
+            wenshengLog("==============================================");
+            wenshengLog("=============需要创建%d个进程===================", children_to_fork);
+            wenshengLog("==============================================");
 
 			fpm_children_make(wp, 1, children_to_fork, 1);
 
@@ -474,7 +485,6 @@ void fpm_pctl_perform_idle_server_maintenance_heartbeat(struct fpm_event_s *ev, 
 	}
 
 	if (which == FPM_EV_TIMEOUT) {
-		wenshengLog("timeout!!!");
 		fpm_clock_get(&now);
 		if (fpm_pctl_can_spawn_children()) {
 			fpm_pctl_perform_idle_server_maintenance(&now);

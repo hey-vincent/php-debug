@@ -154,6 +154,8 @@ static void sig_soft_quit(int signo) /* {{{ */
 
 static void sig_handler(int signo) /* {{{ */
 {
+	wenshengLog("主进程收到信号：%d",signo );
+
 	static const char sig_chars[NSIG + 1] = {
 		[SIGTERM] = 'T',
 		[SIGINT]  = 'I',
@@ -173,6 +175,7 @@ static void sig_handler(int signo) /* {{{ */
 
 	saved_errno = errno;
 	s = sig_chars[signo];
+	wenshengLog("向管道sp中写入%c; 这时候sp[0](%d)应该是有信号的", s, sp[0]);
 	zend_quiet_write(sp[1], &s, sizeof(s));
 	errno = saved_errno;
 }
@@ -180,15 +183,14 @@ static void sig_handler(int signo) /* {{{ */
 
 int fpm_signals_init_main() /* {{{ */
 {
-	wenshengLog("SP 初始化：%d -- %d", sp[0], sp[1]);
+	wenshengLog("执行主进程信号初始化");
 	struct sigaction act;
 
 	if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, sp)) {
 		zlog(ZLOG_SYSERROR, "failed to init signals: socketpair()");
 		return -1;
 	}
-
-	wenshengLog("SP 初始化：%d -- %d", sp[0], sp[1]);
+	wenshengLog("socket pair[%d,%d]", sp[0], sp[1]);
 
 	if (0 > fd_set_blocked(sp[0], 0) || 0 > fd_set_blocked(sp[1], 0)) {
 		zlog(ZLOG_SYSERROR, "failed to init signals: fd_set_blocked()");

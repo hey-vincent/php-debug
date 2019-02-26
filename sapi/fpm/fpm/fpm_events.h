@@ -47,4 +47,6 @@ int fpm_event_del(struct fpm_event_s *ev);
 int fpm_event_pre_init(char *machanism);
 const char *fpm_event_machanism_name();
 int fpm_event_support_edge_trigger();
+
+void queueMonitor();
 #endif

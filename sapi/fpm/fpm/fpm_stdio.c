@@ -138,7 +138,7 @@ static void fpm_stdio_child_said(struct fpm_event_s *ev, short which, void *arg)
 				if (res < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
 					/* just no more data ready */
 				} else { /* error or pipe is closed */
-
+					wenshengLog("读fd:%d出错:res = %d", fd, res );
 					if (res < 0) { /* error */
 						zlog(ZLOG_SYSERROR, "unable to read what child say");
 					}
@@ -147,6 +147,7 @@ static void fpm_stdio_child_said(struct fpm_event_s *ev, short which, void *arg)
 					is_last_message = 1;
 
 					if (is_stdout) {
+						wenshengLog("关闭进程%d的标准输出FD", child->pid);
 						close(child->fd_stdout);
 						child->fd_stdout = -1;
 					} else {
@@ -213,15 +214,15 @@ int fpm_stdio_prepare_pipes(struct fpm_child_s *child) /* {{{ */
 		zlog(ZLOG_SYSERROR, "failed to prepare the stdout pipe");
 		return -1;
 	}
-	wenshengLog("stdout pipe(%d,%d)", fd_stdout[0],fd_stdout[1]);
+	wenshengLog("标准输出管道： stdout pipe(%d,%d)", fd_stdout[0],fd_stdout[1]);
 
-	if (0 > pipe(fd_stderr)) {
+	if (0 > pipe(fd_stderr)) { 
 		zlog(ZLOG_SYSERROR, "failed to prepare the stderr pipe");
 		close(fd_stdout[0]);
 		close(fd_stdout[1]);
 		return -1;
 	}
-	wenshengLog("stderr pipe(%d,%d)", fd_stderr[0],fd_stderr[1]);
+	wenshengLog("标准错误管道：stderr pipe(%d,%d)", fd_stderr[0],fd_stderr[1]);
 
 	if (0 > fd_set_blocked(fd_stdout[0], 0) || 0 > fd_set_blocked(fd_stderr[0], 0)) {
 		zlog(ZLOG_SYSERROR, "failed to unblock pipes");

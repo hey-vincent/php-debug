@@ -1908,15 +1908,15 @@ consult the installation file that came with this distribution, or visit \n\
 
 			fpm_request_info();
 
-			// wensheng comment:--
-			char *test_txt = "已经把标准输出FD绑定到当前子进程的事件FD里了，现在我只要向标准输出写数据，Master就会收集到";
-			write(STDOUT_FILENO, test_txt, strlen(test_txt) );
+			// wensheng comment:-- //char *test_txt = "已经把标准输出FD绑定到当前子进程的事件FD里了，现在我只要向标准输出写数据，Master就会收集到";
+			// write(STDOUT_FILENO, test_txt, strlen(test_txt) );
 			// --:end
 
 			/* request startup only after we've done all we can to
 			 *            get path_translated */
 			if (UNEXPECTED(php_request_startup() == FAILURE)) {
-				fcgi_finish_request(request, 1);
+				wenshengLog("quit!!!");
+			    fcgi_finish_request(request, 1);
 				SG(server_context) = NULL;
 				php_module_shutdown();
 				return FPM_EXIT_SOFTWARE;
@@ -2008,7 +2008,9 @@ fastcgi_request_done:
 			php_request_shutdown((void *) 0);
 
 			requests++;
+
 			if (UNEXPECTED(max_requests && (requests == max_requests))) {
+				wenshengLog("请求数达上限：%d", requests);
 				fcgi_request_set_keep(request, 0);
 				fcgi_finish_request(request, 0);
 				break;

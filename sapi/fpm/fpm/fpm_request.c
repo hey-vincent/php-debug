@@ -59,7 +59,6 @@ void fpm_request_accepting() /* {{{ */
 
 void fpm_request_reading_headers() /* {{{ */
 {
-    wenshengLog("OnAccept回调");
 	struct fpm_scoreboard_proc_s *proc;
 
 	struct timeval now;

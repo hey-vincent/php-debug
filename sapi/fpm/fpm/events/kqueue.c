@@ -144,11 +144,18 @@ static int fpm_event_kqueue_wait(struct fpm_event_queue_s *queue, unsigned long 
 	for (i = 0; i < ret; i++) {
 		if (kevents[i].udata) {
 			struct fpm_event_s *ev = (struct fpm_event_s *)kevents[i].udata;
-			fpm_event_fire(ev);
+            // wensheng comment:-- management 的fd
+            wenshengLog("发现信号：Ev[fd=%d]", ev->fd);
+            // --:end
+
+
+            // wensheng comment:-- fpm_stdio_child_said  --:end
+            fpm_event_fire(ev);
 			/* sanity check */
 			if (fpm_globals.parent_pid != getpid()) {
 				return -2;
 			}
+
 		}
 	}
 
