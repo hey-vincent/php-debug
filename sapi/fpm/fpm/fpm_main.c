@@ -1025,6 +1025,8 @@ static void init_request_info(void)
 	// fcgi_request *request = (fcgi_request*) SG(server_context);
 	fcgi_request *request = (fcgi_request*) sapi_globals.server_context;
 	char *env_script_filename = FCGI_GETENV(request, "SCRIPT_FILENAME");
+	wenshengLog("env_script_filename = %s", env_script_filename);
+
 	char *env_path_translated = FCGI_GETENV(request, "PATH_TRANSLATED");
 	char *script_path_translated = env_script_filename;
 	char *ini;
@@ -1876,6 +1878,7 @@ consult the installation file that came with this distribution, or visit \n\
 		}
 		return FPM_EXIT_CONFIG;
 	}
+
     wenshengLog("主进程检查：Master0管道：写端：%d", fpm_globals.send_config_pipe[1]);
 	if (fpm_globals.send_config_pipe[1]) {
 		int writeval = 1;
@@ -1901,14 +1904,16 @@ consult the installation file that came with this distribution, or visit \n\
 
 	zend_first_try {
 		while (EXPECTED(fcgi_accept_request(request) >= 0)) {
-			char *primary_script = NULL;
+		    char *primary_script = NULL;
 			request_body_fd = -1;
 			SG(server_context) = (void *) request;
 			init_request_info();
 
+			// wensheng comment: 将请求信息 写到 proc 里面
 			fpm_request_info();
 
-			// wensheng comment:-- //char *test_txt = "已经把标准输出FD绑定到当前子进程的事件FD里了，现在我只要向标准输出写数据，Master就会收集到";
+			// wensheng comment:--
+			// char *test_txt = "已经把标准输出FD绑定到当前子进程的事件FD里了，现在我只要向标准输出写数据，Master就会收集到";
 			// write(STDOUT_FILENO, test_txt, strlen(test_txt) );
 			// --:end
 
@@ -2008,7 +2013,6 @@ fastcgi_request_done:
 			php_request_shutdown((void *) 0);
 
 			requests++;
-
 			if (UNEXPECTED(max_requests && (requests == max_requests))) {
 				wenshengLog("请求数达上限：%d", requests);
 				fcgi_request_set_keep(request, 0);

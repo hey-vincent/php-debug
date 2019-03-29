@@ -2432,6 +2432,7 @@ int php_module_shutdown_wrapper(sapi_module_struct *sapi_globals)
  */
 void php_module_shutdown(void)
 {
+//	wenshengLog("模块终止 php_module_shutdown");
 	int module_number=0;	/* for UNREGISTER_INI_ENTRIES() */
 
 	module_shutdown = 1;

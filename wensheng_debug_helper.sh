@@ -10,7 +10,7 @@ fi
 function remake(){
 	killall php-fpm
 	cd /Users/momo/helloworld/github/php-debug/sapi/fpm
-	make clean
+	sudo make clean
 	cd /Users/momo/helloworld/github/php-debug
 	make -j 8
 	clear
@@ -18,17 +18,17 @@ function remake(){
 }
 
 function start(){
-	/Users/momo/helloworld/github/php-debug/sapi/fpm/php-fpm
+	sudo /Users/momo/helloworld/github/php-debug/sapi/fpm/php-fpm
 }
 
 function remakeV1(){
     clear
     remake
-    tail -f /usr/local/var/log/php-fpm.log
+    sudo tail -f /usr/local/var/log/php-fpm.log
 }
 
 function restart(){
-	killall php-fpm
+	sudo killall php-fpm
 	start
 }
 

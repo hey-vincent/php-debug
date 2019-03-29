@@ -336,14 +336,6 @@ static void fpm_pctl_perform_idle_server_maintenance(struct timeval *now) /* {{{
 			}
 		}
 
-		// wensheng comment:--
-//		if (strcmp(wp->config->name , "www") == 0){
-//			wenshengLog("计分板信息：idle：%d， active:%d max_spare: %d last_idle:%d", wp->scoreboard->idle, wp->scoreboard->active,
-//						wp->config->pm_max_spare_servers, last_idle_child->pid);
-//		}
-
-		// --:end
-
 		/* update status structure for all PMs */
 		if (wp->listen_address_domain == FPM_AF_INET) {
 			if (0 > fpm_socket_get_listening_queue(wp->listening_socket, &cur_lq, NULL)) {

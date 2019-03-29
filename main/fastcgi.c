@@ -1412,7 +1412,12 @@ int fcgi_accept_request(fcgi_request *req)
 					req->fd = accept(listen_socket, (struct sockaddr *)&sa, &len);
 					FCGI_UNLOCK(req->listen_socket);
 
-					client_sa = sa;
+                    // wensheng comment:--
+                    //wesheng comment
+                    fcgi_log(FCGI_WARNING, "链接建立成功：sock_fd = %d", req->fd);
+                    // --:end
+
+                    client_sa = sa;
 					if (req->fd >= 0 && !fcgi_is_allowed()) {
 						fcgi_log(FCGI_ERROR, "Connection disallowed: IP address '%s' has been dropped.", fcgi_get_last_client_ip());
 						closesocket(req->fd);
@@ -1448,9 +1453,7 @@ int fcgi_accept_request(fcgi_request *req)
                         // --:end
                         ret = poll(&fds, 1, 5000);
 					} while (ret < 0 && errno == EINTR);
-					// wensheng add comment- accept之后不太可能超时
 					if (ret > 0 && (fds.revents & POLLIN)) {
-					    //wensehng comment: // fcgi_log(FCGI_WARNING, "读到链接%d有请求到来", req->fd);
 					    break;
 					}
 					fcgi_close(req, 1, 0);
@@ -1481,7 +1484,7 @@ int fcgi_accept_request(fcgi_request *req)
 		} else if (in_shutdown) {
 			return -1;
 		}
-        // wensheng comment:-- 上面accept到请求之后跳到这里 回调fpm_request_reading_headers --:end
+        // wensheng comment:-- 上面accept到请求之后跳到这里 回调 fpm_request_reading_headers --:end
         req->hook.on_read();
 
         if (fcgi_read_request(req)) {
@@ -1676,6 +1679,7 @@ int fcgi_finish_request(fcgi_request *req, int force_close)
 
 	if (req->fd >= 0) {
 		ret = fcgi_end(req);
+		fcgi_log(FCGI_WARNING, "关闭socket:%d", req->fd);
 		fcgi_close(req, force_close, 1);
 	}
 	return ret;

@@ -372,7 +372,7 @@ int fpm_event_init_main() /* {{{ */
 
 void fpm_event_loop(int err) /* {{{ */
 {
-    wenshengLog("开始轮询事件", err);
+    wenshengLog("开始轮询事件:%d", err);
     queueMonitor();
 	static struct fpm_event_s signal_fd_event;
 
@@ -449,7 +449,7 @@ void fpm_event_loop(int err) /* {{{ */
 
 		if (ret > 0) {
 			// wenshengLog("检查到FD链有信号的事件个数: %d",ret);
-			// zlog(ZLOG_DEBUG, "event module triggered %d events", ret);
+			zlog(ZLOG_DEBUG, "event module triggered %d events", ret);
 		}
 
         // wensheng comment:--
